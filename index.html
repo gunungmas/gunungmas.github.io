@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Meta tag untuk Lightning Address -->
+    <meta name="lightning" content="naked@getalby.com" />
+    <title>Donasi dengan Lightning Network</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+        }
+        .donate-button {
+            background-color: #f7931a;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+        }
+        .donate-button:hover {
+            background-color: #e68a00;
+        }
+    </style>
+</head>
+<body>
+    <h1>Donasi dengan Bitcoin Lightning</h1>
+    <p>Klik tombol di bawah untuk mendukung kami melalui Lightning Network!</p>
+    <button class="donate-button" onclick="makeDonation()">Donasi Sekarang</button>
+
+    <script>
+        // Fungsi untuk menangani donasi
+        async function makeDonation() {
+            try {
+                // Cek apakah WebLN (Lightning Network) tersedia di browser
+                if (window.webln) {
+                    await window.webln.enable();
+                    
+                    // Ambil Lightning Address dari meta tag
+                    const lightningAddress = document.querySelector('meta[name="lightning"]').content;
+                    
+                    // Contoh: Kirim pembayaran (misalnya, 1000 satoshi)
+                    const amount = 1000; // Jumlah dalam satoshi (ubah sesuai kebutuhan)
+                    
+                    // Buat invoice menggunakan WebLN
+                    const invoice = await window.webln.makeInvoice({
+                        amount: amount,
+                        defaultMemo: "Donasi untuk situs web"
+                    });
+                    
+                    // Kirim pembayaran
+                    await window.webln.sendPayment(invoice.paymentRequest);
+                    
+                    alert("Terima kasih atas donasinya!");
+                } else {
+                    alert("Ekstensi Lightning (seperti Alby) tidak terdeteksi. Silakan instal ekstensi Alby atau dompet Lightning lainnya.");
+                }
+            } catch (error) {
+                console.error("Error saat memproses donasi:", error);
+                alert("Gagal memproses donasi. Pastikan dompet Lightning Anda aktif.");
+            }
+        }
+    </script>
+</body>
+</html>
