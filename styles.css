@@ -6,7 +6,7 @@ body {
     margin: 0;
 }
 
-h1 {
+h1, h2 {
     color: #333;
 }
 
@@ -51,11 +51,37 @@ p {
 .donation-message {
     margin-top: 20px;
     font-size: 16px;
-    color: #4CAF50; /* Warna hijau untuk pesan sukses */
+    color: #4CAF50;
 }
 
 .donation-message.error {
-    color: #e74c3c; /* Warna merah untuk pesan error */
+    color: #e74c3c;
+}
+
+/* Gaya untuk tabel riwayat donasi */
+.history-container {
+    margin-top: 30px;
+}
+
+#donation-history {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+#donation-history th, #donation-history td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+
+#donation-history th {
+    background-color: #f2f2f2;
+    color: #333;
+}
+
+#donation-history td {
+    color: #555;
 }
 
 @media (max-width: 600px) {
@@ -66,5 +92,10 @@ p {
 
     select {
         width: 100%;
+    }
+
+    #donation-history th, #donation-history td {
+        font-size: 14px;
+        padding: 5px;
     }
 }
