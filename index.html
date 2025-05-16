@@ -5,14 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Meta tag untuk Lightning Address -->
     <meta name="lightning" content="evo@getalby.com" />
-    <title>Donasi dengan Lightning Network</title>
+    <title>Donasi dengan Lightning Network & Kalkulator</title>
+    <!-- Impor PyScript -->
+    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
             text-align: center;
             padding: 50px;
         }
-        .donate-button {
+        .donate-button, .calc-button {
             background-color: #f7931a;
             color: white;
             padding: 15px 30px;
@@ -20,56 +23,82 @@
             border-radius: 5px;
             cursor: pointer;
             font-size: 18px;
+            margin: 10px;
         }
-        .donate-button:hover {
+        .donate-button:hover, .calc-button:hover {
             background-color: #e68a00;
         }
-        select {
+        select, input {
             padding: 10px;
             font-size: 16px;
             margin: 10px;
             border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .section {
+            margin: 40px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+        }
+        h2 {
+            color: #333;
+        }
+        #calc-result {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #f7931a;
         }
     </style>
 </head>
 <body>
-    <h1>Donasi dengan Bitcoin Lightning</h1>
-    <p>Pilih jumlah donasi dan klik tombol untuk mendukung kami!</p>
-    <label for="amount">Jumlah Donasi (Satoshi):</label>
-    <select id="amount" name="amount">
-        <option value="1">1 Satoshi</option>
-        <option value="10">10 Satoshi</option>
-        <option value="50">50 Satoshi</option>
-        <option value="100">100 Satoshi</option>
-        <option value="500">500 Satoshi</option>
-        <option value="1000">1000 Satoshi</option>
-    </select>
-    <br>
-    <button class="donate-button" onclick="makeDonation()">Donasi Sekarang</button>
+    <!-- Bagian Donasi -->
+    <div class="section">
+        <h1>Donasi dengan Bitcoin Lightning</h1>
+        <p>Pilih jumlah donasi dan klik tombol untuk mendukung kami!</p>
+        <label for="amount">Jumlah Donasi (Satoshi):</label>
+        <select id="amount" name="amount">
+            <option value="1">1 Satoshi</option>
+            <option value="10">10 Satoshi</option>
+            <option value="50">50 Satoshi</option>
+            <option value="100">100 Satoshi</option>
+            <option value="500">500 Satoshi</option>
+            <option value="1000">1000 Satoshi</option>
+        </select>
+        <br>
+        <button class="donate-button" onclick="makeDonation()">Donasi Sekarang</button>
+    </div>
 
+    <!-- Bagian Kalkulator -->
+    <div class="section">
+        <h2>Kalkulator Sederhana</h2>
+        <p>Masukkan dua angka dan pilih operasi:</p>
+        <input type="number" id="num1" placeholder="Angka pertama" required>
+        <input type="number" id="num2" placeholder="Angka kedua" required>
+        <select id="operation">
+            <option value="+">+</option>
+            <option value="-">-</option>
+            <option value="*">×</option>
+            <option value="/">÷</option>
+        </select>
+        <br>
+        <button class="calc-button" onclick="calculate()">Hitung</button>
+        <div id="calc-result"></div>
+    </div>
+
+    <!-- Skrip JavaScript untuk Donasi -->
     <script>
-        // Fungsi untuk menangani donasi
         async function makeDonation() {
             try {
-                // Cek apakah WebLN tersedia
                 if (window.webln) {
                     await window.webln.enable();
-                    
-                    // Ambil Lightning Address dari meta tag
                     const lightningAddress = document.querySelector('meta[name="lightning"]').content;
-                    
-                    // Ambil jumlah donasi dari dropdown
                     const amount = parseInt(document.getElementById('amount').value);
-                    
-                    // Buat invoice menggunakan WebLN
                     const invoice = await window.webln.makeInvoice({
                         amount: amount,
                         defaultMemo: "Donasi untuk situs web"
                     });
-                    
-                    // Kirim pembayaran
                     await window.webln.sendPayment(invoice.paymentRequest);
-                    
                     alert(`Terima kasih atas donasi sebesar ${amount} satoshi!`);
                 } else {
                     alert("Ekstensi Lightning (seperti Alby) tidak terdeteksi. Silakan instal ekstensi Alby atau dompet Lightning lainnya.");
@@ -79,6 +108,46 @@
                 alert("Gagal memproses donasi. Pastikan dompet Lightning Anda aktif.");
             }
         }
+
+        // Fungsi JavaScript untuk memanggil kalkulator Python
+        function calculate() {
+            const num1 = parseFloat(document.getElementById('num1').value);
+            const num2 = parseFloat(document.getElementById('num2').value);
+            const operation = document.getElementById('operation').value;
+            // Panggil fungsi Python dari PyScript
+            pyscript.run(`
+                from js import document
+                def kalkulator_sederhana(a, b, operasi):
+                    if operasi == '+':
+                        return a + b
+                    elif operasi == '-':
+                        return a - b
+                    elif operasi == '*':
+                        return a * b
+                    elif operasi == '/':
+                        return a / b if b != 0 else "Error: Pembagian dengan nol!"
+                    else:
+                        return "Operasi tidak valid!"
+                result = kalkulator_sederhana(${num1}, ${num2}, '${operation}')
+                document.getElementById('calc-result').innerText = f'Hasil: {result}'
+            `);
+        }
     </script>
+
+    <!-- Kode Python dijalankan oleh PyScript -->
+    <py-script>
+        from js import document
+        def kalkulator_sederhana(a, b, operasi):
+            if operasi == '+':
+                return a + b
+            elif operasi == '-':
+                return a - b
+            elif operasi == '*':
+                return a * b
+            elif operasi == '/':
+                return a / b if b != 0 else "Error: Pembagian dengan nol!"
+            else:
+                return "Operasi tidak valid!"
+    </py-script>
 </body>
 </html>
