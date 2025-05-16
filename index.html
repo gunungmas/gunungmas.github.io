@@ -6,9 +6,6 @@
     <!-- Meta tag untuk Lightning Address -->
     <meta name="lightning" content="evo@getalby.com" />
     <title>Donasi dengan Lightning Network & Kalkulator</title>
-    <!-- Impor PyScript untuk menjalankan Python -->
-    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
-    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
     <!-- Impor file CSS -->
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -45,7 +42,7 @@
         <br>
         <button class="calc-button" onclick="calculate()">Hitung</button>
         <div id="calc-result"></div>
-        <h3>Kode Sumber Kalkulator</h3>
+        <h3>Kode Sumber Kalkulator (Python)</h3>
         <!-- Embed Gist dari sapibot -->
         <script src="https://gist.github.com/sapibot/3181c55d413435c9aee6734fa948859c.js"></script>
     </div>
@@ -74,44 +71,31 @@
             }
         }
 
-        // Fungsi untuk kalkulator
+        // Fungsi kalkulator dalam JavaScript
+        function kalkulator_sederhana(a, b, operasi) {
+            if (operasi === '+') return a + b;
+            if (operasi === '-') return a - b;
+            if (operasi === '*') return a * b;
+            if (operasi === '/') return b !== 0 ? a / b : "Error: Pembagian dengan nol!";
+            return "Operasi tidak valid!";
+        }
+
+        // Fungsi untuk menghitung
         function calculate() {
             const num1 = parseFloat(document.getElementById('num1').value);
             const num2 = parseFloat(document.getElementById('num2').value);
             const operation = document.getElementById('operation').value;
 
             // Validasi input
-            if            if (isNaN(num1) || isNaN(num2)) {
+            if (isNaN(num1) || isNaN(num2)) {
                 document.getElementById('calc-result').innerText = 'Masukkan angka yang valid!';
                 return;
             }
 
-            // Panggil fungsi Python dari PyScript
-            const result = window.kalkulator_sederhana(num1, num2, operation);
+            // Hitung menggunakan fungsi JavaScript
+            const result = kalkulator_sederhana(num1, num2, operation);
             document.getElementById('calc-result').innerText = `Hasil: ${result}`;
         }
     </script>
-
-    <!-- Kode Python untuk Kalkulator -->
-    <py-script>
-        from js import document
-        from pyscript import when
-
-        # Definisikan fungsi kalkulator
-        def kalkulator_sederhana(a, b, operasi):
-            if operasi == '+':
-                return a + b
-            elif operasi == '-':
-                return a - b
-            elif operasi == '*':
-                return a * b
-            elif operasi == '/':
-                return a / b if b != 0 else "Error: Pembagian dengan nol!"
-            else:
-                return "Operasi tidak valid!"
-
-        # Daftarkan fungsi Python ke JavaScript
-        window.kalkulator_sederhana = kalkulator_sederhana
-    </py-script>
 </body>
 </html>
