@@ -3,7 +3,23 @@ body {
     text-align: center;
     padding: 50px;
     background-color: #f9f9f9;
+    margin: 0;
 }
+
+h1, h2, h3 {
+    color: #333;
+}
+
+.section, .form-container, .table-container, .summary-container, .chart-container, .growth-container {
+    margin: 40px auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    max-width: 800px;
+    background-color: white;
+}
+
+/* Gaya untuk tombol donasi dan kalkulator */
 .donate-button, .calc-button {
     background-color: #f7931a;
     color: white;
@@ -14,34 +30,142 @@ body {
     font-size: 18px;
     margin: 10px;
 }
+
 .donate-button:hover, .calc-button:hover {
     background-color: #e68a00;
 }
+
+/* Gaya untuk input dan select */
 select, input {
     padding: 10px;
     font-size: 16px;
     margin: 10px;
     border-radius: 5px;
     border: 1px solid #ccc;
+    width: 200px;
 }
-.section {
-    margin: 40px auto;
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    max-width: 600px;
-    background-color: white;
-}
-h1, h2, h3 {
-    color: #333;
-}
+
 #calc-result {
     margin-top: 20px;
     font-size: 18px;
     color: #f7931a;
 }
+
 .gist {
     max-width: 600px;
     margin: 20px auto;
     text-align: left;
+}
+
+/* Gaya untuk form transaksi */
+.form-container label {
+    display: inline-block;
+    width: 120px;
+    text-align: left;
+    margin-right: 10px;
+}
+
+.form-container input, .form-container select {
+    width: 200px;
+    margin: 5px 0;
+}
+
+.form-container button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.form-container button:hover {
+    background-color: #45a049;
+}
+
+.error-message {
+    color: red;
+    margin: 10px 0;
+}
+
+/* Gaya untuk tabel transaksi dan ringkasan */
+.table-container table, .summary-container table, .growth-container table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.table-container th, .table-container td, .summary-container th, .summary-container td, .growth-container th, .growth-container td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+
+.table-container th, .summary-container th, .growth-container th {
+    background-color: #f2f2f2;
+}
+
+.summary-container caption a {
+    color: #3498db;
+    text-decoration: none;
+}
+
+.summary-container caption a:hover {
+    text-decoration: underline;
+}
+
+#resetButton {
+    background-color: #e74c3c;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+#resetButton:hover {
+    background-color: #c0392b;
+}
+
+/* Gaya untuk simulasi pertumbuhan */
+.legend {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    margin: 0 10px;
+}
+
+.legend-color {
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
+    border-radius: 3px;
+}
+
+/* Responsivitas */
+@media (max-width: 600px) {
+    .section, .form-container, .table-container, .summary-container, .chart-container, .growth-container {
+        max-width: 100%;
+        padding: 10px;
+    }
+
+    select, input {
+        width: 100%;
+    }
+
+    .form-container label {
+        width: 100%;
+        text-align: left;
+    }
+
+    .form-container input, .form-container select {
+        width: 100%;
+    }
 }
