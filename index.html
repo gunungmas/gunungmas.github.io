@@ -27,6 +27,20 @@
         <button class="donate-button" onclick="makeDonation()">Donasi Sekarang</button>
         <!-- Elemen untuk menampilkan pesan konfirmasi -->
         <div id="donation-message" class="donation-message"></div>
+
+        <!-- Tabel Riwayat Donasi -->
+        <div class="history-container">
+            <h2>Riwayat Donasi</h2>
+            <table id="donation-history">
+                <thead>
+                    <tr>
+                        <th>Jumlah (Satoshi)</th>
+                        <th>Waktu</th>
+                    </tr>
+                </thead>
+                <tbody id="history-body"></tbody>
+            </table>
+        </div>
     </div>
 
     <!-- Impor script.js -->
