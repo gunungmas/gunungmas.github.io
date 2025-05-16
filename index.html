@@ -5,11 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Meta tag untuk Lightning Address -->
     <meta name="lightning" content="evo@getalby.com" />
-    <title>Donasi, Kalkulator & Manajemen Transaksi</title>
-    <!-- Impor CSS -->
+    <title>Donasi dengan Lightning Network</title>
+    <!-- Impor file CSS -->
     <link rel="stylesheet" href="styles.css">
-    <!-- Impor Chart.js untuk grafik -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <!-- Bagian Donasi -->
@@ -27,189 +25,11 @@
         </select>
         <br>
         <button class="donate-button" onclick="makeDonation()">Donasi Sekarang</button>
+        <!-- Elemen untuk menampilkan pesan konfirmasi -->
+        <div id="donation-message" class="donation-message"></div>
     </div>
 
-    <!-- Bagian Kalkulator -->
-    <div class="section">
-        <h2>Kalkulator Sederhana</h2>
-        <p>Masukkan dua angka dan pilih operasi:</p>
-        <input type="number" id="num1" placeholder="Angka pertama" required>
-        <input type="number" id="num2" placeholder="Angka kedua" required>
-        <select id="operation">
-            <option value="+">+</option>
-            <option value="-">-</option>
-            <option value="*">×</option>
-            <option value="/">÷</option>
-        </select>
-        <br>
-        <button class="calc-button" onclick="calculate()">Hitung</button>
-        <div id="calc-result"></div>
-        <h3>Kode Sumber Kalkulator (Python)</h3>
-        <!-- Embed Gist dari sapibot -->
-        <script src="https://gist.github.com/sapibot/3181c55d413435c9aee6734fa948859c.js"></script>
-    </div>
-
-    <!-- Form Container -->
-    <div class="form-container section">
-        <h2>Tambah Transaksi</h2>
-        <form id="transactionForm">
-            <label for="asset">Simbol:</label>
-            <input type="text" id="asset" placeholder="EURUSD / XAUUSD / BTC / ETH" required><br>
-            <label for="type">Tipe:</label>
-            <select id="type" required>
-                <option value="buy">Buy</option>
-                <option value="sell">Sell</option>
-            </select><br>
-            <label for="amount">Ukuran:</label>
-            <input type="number" id="amount" step="0.01" min="0" required><br>
-            <label for="entry">Harga Masuk:</label>
-            <input type="number" id="entry" step="0.00001" min="0" required><br>
-            <label for="exit">Harga Keluar (opsional):</label>
-            <input type="number" id="exit" step="0.00001" min="0"><br>
-            <label for="notes">Catatan:</label>
-            <input type="text" id="notes" placeholder="Opsional"><br>
-            <div id="errorMessage" class="error-message"></div>
-            <button type="submit">Proses</button>
-        </form>
-    </div>
-
-    <!-- Table Container -->
-    <div class="table-container section">
-        <h2>Daftar Transaksi</h2>
-        <table id="transactionTable">
-            <thead>
-                <tr>
-                    <th>Tanggal</th>
-                    <th>Simbol</th>
-                    <th>Tipe</th>
-                    <th>Ukuran</th>
-                    <th>Harga Masuk</th>
-                    <th>Harga Keluar</th>
-                    <th>Profit/Loss</th>
-                    <th>Catatan</th>
-                </tr>
-            </thead>
-            <tbody id="transactionBody"></tbody>
-        </table>
-    </div>
-
-    <!-- Summary Container -->
-    <div class="summary-container section">
-        <h2>Ringkasan</h2>
-        <table id="summaryTable">
-            <caption><a href="https://www.mql5.com/en/signals/2268101" target="_blank">Peta Pertumbuhan Ekuitas</a></caption>
-            <thead>
-                <tr>
-                    <th>Kategori</th>
-                    <th>Nilai</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr><td>Total Trades</td><td id="totalTrades">0</td></tr>
-                <tr><td>Total Profit/Loss</td><td id="totalPL">0</td></tr>
-                <tr><td>Rata-rata P/L per Trade</td><td id="avgPL">0</td></tr>
-                <tr><td>Trades BTC</td><td id="btcTrades">0</td></tr>
-                <tr><td>Trades ETH</td><td id="ethTrades">0</td></tr>
-                <tr><td>Trades Forex</td><td id="forexTrades">0</td></tr>
-                <tr><td>Trades XAUUSD</td><td id="xauTrades">0</td></tr>
-            </tbody>
-        </table>
-        <button id="resetButton">Reset Semua</button>
-    </div>
-
-    <!-- Transaction Chart Container -->
-    <div class="chart-container section" style="width: 100%; height: 400px;">
-        <canvas id="transactionChart"></canvas>
-    </div>
-
-    <!-- Growth Simulation Container -->
-    <div class="growth-container section">
-        <h1>Simulasi Keuntungan 100% per Transaksi</h1>
-        <p>Jika modal awal Anda adalah $0.50 dan setiap transaksi memberikan keuntungan 100%, berikut adalah pertumbuhannya:</p>
-        <div class="legend">
-            <div class="legend-item"><div class="legend-color" style="background: #3498db;"></div> Transaksi Awal</div>
-            <div class="legend-item"><div class="legend-color" style="background: #2ecc71;"></div> Transaksi Pertumbuhan</div>
-            <div class="legend-item"><div class="legend-color" style="background: #e74c3c;"></div> Transaksi Puncak</div>
-        </div>
-        
-        <!-- Container untuk dua grafik -->
-        <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
-            <div style="width: 48%; height: 400px;">
-                <canvas id="growthChart"></canvas>
-            </div>
-            <div style="width: 48%; height: 400px;">
-                <canvas id="growthChart2"></canvas>
-            </div>
-        </div>
-
-        <!-- Tabel -->
-        <table id="growthTable">
-            <thead>
-                <tr>
-                    <th>Transaksi</th>
-                    <th>Volume</th>
-                    <th>Target Poin</th>
-                    <th>Modal Awal</th>
-                    <th>Keuntungan</th>
-                    <th>Modal Akhir</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-    </div>
-
-    <!-- Skrip JavaScript untuk Donasi dan Kalkulator -->
-    <script>
-        // Fungsi untuk donasi
-        async function makeDonation() {
-            try {
-                if (window.webln) {
-                    await window.webln.enable();
-                    const lightningAddress = document.querySelector('meta[name="lightning"]').content;
-                    const amount = parseInt(document.getElementById('amount').value);
-                    const invoice = await window.webln.makeInvoice({
-                        amount: amount,
-                        defaultMemo: "Donasi untuk situs web"
-                    });
-                    await window.webln.sendPayment(invoice.paymentRequest);
-                    alert(`Terima kasih atas donasi sebesar ${amount} satoshi!`);
-                } else {
-                    alert("Ekstensi Lightning (seperti Alby) tidak terdeteksi. Silakan instal ekstensi Alby atau dompet Lightning lainnya.");
-                }
-            } catch (error) {
-                console.error("Error saat memproses donasi:", error);
-                alert("Gagal memproses donasi. Pastikan dompet Lightning Anda aktif.");
-            }
-        }
-
-        // Fungsi kalkulator dalam JavaScript
-        function kalkulator_sederhana(a, b, operasi) {
-            if (operasi === '+') return a + b;
-            if (operasi === '-') return a - b;
-            if (operasi === '*') return a * b;
-            if (operasi === '/') return b !== 0 ? a / b : "Error: Pembagian dengan nol!";
-            return "Operasi tidak valid!";
-        }
-
-        // Fungsi untuk menghitung
-        function calculate() {
-            const num1 = parseFloat(document.getElementById('num1').value);
-            const num2 = parseFloat(document.getElementById('num2').value);
-            const operation = document.getElementById('operation').value;
-
-            // Validasi input
-            if (isNaN(num1) || isNaN(num2)) {
-                document.getElementById('calc-result').innerText = 'Masukkan angka yang valid!';
-                return;
-            }
-
-            // Hitung menggunakan fungsi JavaScript
-            const result = kalkulator_sederhana(num1, num2, operation);
-            document.getElementById('calc-result').innerText = `Hasil: ${result}`;
-        }
-    </script>
-
-    <!-- Impor script.js untuk transaksi dan simulasi -->
+    <!-- Impor script.js -->
     <script src="script.js"></script>
 </body>
 </html>
