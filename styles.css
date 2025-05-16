@@ -1,0 +1,47 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 50px;
+    background-color: #f9f9f9;
+}
+.donate-button, .calc-button {
+    background-color: #f7931a;
+    color: white;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 18px;
+    margin: 10px;
+}
+.donate-button:hover, .calc-button:hover {
+    background-color: #e68a00;
+}
+select, input {
+    padding: 10px;
+    font-size: 16px;
+    margin: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+.section {
+    margin: 40px auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    max-width: 600px;
+    background-color: white;
+}
+h1, h2, h3 {
+    color: #333;
+}
+#calc-result {
+    margin-top: 20px;
+    font-size: 18px;
+    color: #f7931a;
+}
+.gist {
+    max-width: 600px;
+    margin: 20px auto;
+    text-align: left;
+}
