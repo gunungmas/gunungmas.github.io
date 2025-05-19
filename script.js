@@ -27,8 +27,12 @@ document.getElementById('amount').addEventListener('input', updateUsdValue);
 // Fungsi untuk donasi
 async function makeDonation() {
     const messageDiv = document.getElementById('donation-message');
+    const qrCodeContainer = document.getElementById('qr-code-container');
+    const qrCodeDiv = document.getElementById('qrcode');
     messageDiv.textContent = '';
     messageDiv.classList.remove('error');
+    qrCodeContainer.style.display = 'none'; // Hide QR code initially
+    qrCodeDiv.innerHTML = ''; // Clear previous QR code
 
     try {
         if (window.webln) {
@@ -47,10 +51,24 @@ async function makeDonation() {
                 amount: amount,
                 defaultMemo: message
             });
+
+            // Generate QR code with the payment request
+            qrCodeContainer.style.display = 'block';
+            new QRCode(qrCodeDiv, {
+                text: invoice.paymentRequest,
+                width: 200,
+                height: 200,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+
+            // Attempt to send payment via WebLN
             await window.webln.sendPayment(invoice.paymentRequest);
 
             // Tampilkan pesan konfirmasi di halaman
             messageDiv.textContent = `Terima kasih atas donasi sebesar ${amount} satoshi!`;
+            qrCodeContainer.style.display = 'none'; // Hide QR code after successful payment
 
             // Simpan donasi ke riwayat
             const donationTime = new Date().toLocaleString('id-ID', { 
@@ -73,8 +91,9 @@ async function makeDonation() {
         }
     } catch (error) {
         console.error("Error saat memproses donasi:", error);
-        messageDiv.textContent = "Gagal memproses donasi. Pastikan dompet Lightning Anda aktif.";
+        messageDiv.textContent = "Gagal memproses donasi. Scan the QR code to pay manually, or ensure your Lightning wallet is active.";
         messageDiv.classList.add('error');
+        // Keep QR code visible if payment fails, so the user can scan it
     }
 }
 
