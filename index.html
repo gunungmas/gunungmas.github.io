@@ -1,30 +1,24 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Meta tag untuk Lightning Address -->
-    <meta name="lightning" content="evo@getalby.com" />
-    <title>Donasi dengan Lightning Network</title>
-    <!-- Impor file CSS -->
-    <link rel="stylesheet" href="styles.css">
-</head>
 <body>
     <!-- Bagian Donasi -->
     <div class="section">
-        <h1>Donasi dengan Bitcoin Lightning</h1>
-        <p>Pilih jumlah donasi dan klik tombol untuk mendukung kami!</p>
-        <label for="amount">Jumlah Donasi (Satoshi):</label>
-        <select id="amount" name="amount">
-            <option value="1">1 Satoshi</option>
-            <option value="10">10 Satoshi</option>
-            <option value="50">50 Satoshi</option>
-            <option value="100">100 Satoshi</option>
-            <option value="500">500 Satoshi</option>
-            <option value="1000">1000 Satoshi</option>
-        </select>
-        <br>
-        <button class="donate-button" onclick="makeDonation()">Donasi Sekarang</button>
+        <h1>Evo</h1>
+        <form id="donation-form">
+            <label for="amount">Amount</label>
+            <div class="amount-container">
+                <input type="number" id="amount" name="amount" value="100" min="1" max="50000" required />
+                <span class="usd-value">$0.10</span>
+            </div>
+            <div class="amount-buttons">
+                <button type="button" onclick="setAmount(1000)">1k ⚡</button>
+                <button type="button" onclick="setAmount(5000)">5k ⚡</button>
+                <button type="button" onclick="setAmount(10000)">10k ⚡</button>
+                <button type="button" onclick="setAmount(25000)">25k ⚡</button>
+            </div>
+            <p class="range-info">between 1 and 50,000 sats</p>
+            <label for="message">Message</label>
+            <textarea id="message" name="message" placeholder="optional"></textarea>
+            <button type="button" class="donate-button" onclick="makeDonation()">⚡ Send Sats ⚡</button>
+        </form>
         <!-- Elemen untuk menampilkan pesan konfirmasi -->
         <div id="donation-message" class="donation-message"></div>
 
@@ -46,4 +40,3 @@
     <!-- Impor script.js -->
     <script src="script.js"></script>
 </body>
-</html>
