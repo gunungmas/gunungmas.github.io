@@ -8,20 +8,22 @@
     <title>Donasi Lightning Network</title>
     <!-- Impor file CSS -->
     <link rel="stylesheet" href="styles.css">
+    <!-- Impor QRCode.js dari CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 </head>
 <body>
     <!-- Bagian Donasi -->
     <div class="section">
-        <h1>Sapi Bot</h1>
+        <h1>Puncak Lembah</h1>
         <form id="donation-form">
             <label for="amount">Amount</label>
             <div class="amount-container">
                 <input type="number" id="amount" name="amount" value="100" min="1" max="50000" required />
-                <span class="usd-value">$0.01</span>
+                <span class="usd-value">$0.10</span>
             </div>
             <div class="amount-buttons">
                 <button type="button" onclick="setAmount(1)">1 ⚡</button>
-                <button type="button" onclick="setAmount(50)">50 ⚡</button>
+                <button type="button" onclick="setAmount(10)">10 ⚡</button>
                 <button type="button" onclick="setAmount(100)">100 ⚡</button>
                 <button type="button" onclick="setAmount(1000)">1k ⚡</button>
             </div>
@@ -32,6 +34,11 @@
         </form>
         <!-- Elemen untuk menampilkan pesan konfirmasi -->
         <div id="donation-message" class="donation-message"></div>
+        <!-- Container untuk QR Code -->
+        <div id="qr-code-container" class="qr-code-container" style="display: none;">
+            <h3>Scan to Pay</h3>
+            <div id="qrcode"></div>
+        </div>
 
         <!-- Tabel Riwayat Donasi -->
         <div class="history-container">
