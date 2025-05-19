@@ -12,18 +12,18 @@
 <body>
     <!-- Bagian Donasi -->
     <div class="section">
-        <h1>Evo</h1>
+        <h1>Sapi Bot</h1>
         <form id="donation-form">
             <label for="amount">Amount</label>
             <div class="amount-container">
                 <input type="number" id="amount" name="amount" value="100" min="1" max="50000" required />
-                <span class="usd-value">$0.10</span>
+                <span class="usd-value">$0.01</span>
             </div>
             <div class="amount-buttons">
+                <button type="button" onclick="setAmount(1)">1 ⚡</button>
+                <button type="button" onclick="setAmount(50)">50 ⚡</button>
+                <button type="button" onclick="setAmount(100)">100 ⚡</button>
                 <button type="button" onclick="setAmount(1000)">1k ⚡</button>
-                <button type="button" onclick="setAmount(5000)">5k ⚡</button>
-                <button type="button" onclick="setAmount(10000)">10k ⚡</button>
-                <button type="button" onclick="setAmount(25000)">25k ⚡</button>
             </div>
             <p class="range-info">between 1 and 50,000 sats</p>
             <label for="message">Message</label>
