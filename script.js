@@ -4,7 +4,25 @@ let donationHistory = JSON.parse(localStorage.getItem('donationHistory')) || [];
 // Render donation history on page load
 document.addEventListener('DOMContentLoaded', () => {
     renderDonationHistory();
+    updateUsdValue(); // Update USD value on page load
 });
+
+// Function to set amount when buttons are clicked
+function setAmount(value) {
+    const amountInput = document.getElementById('amount');
+    amountInput.value = value;
+    updateUsdValue();
+}
+
+// Function to update USD value (using a static conversion rate for demo purposes)
+function updateUsdValue() {
+    const amount = parseInt(document.getElementById('amount').value);
+    const usdValue = (amount * 0.0001).toFixed(2); // Static rate: 1 sat = $0.0001 (for demo)
+    document.querySelector('.usd-value').textContent = `$${usdValue}`;
+}
+
+// Add event listener to update USD value when amount changes
+document.getElementById('amount').addEventListener('input', updateUsdValue);
 
 // Fungsi untuk donasi
 async function makeDonation() {
@@ -17,9 +35,17 @@ async function makeDonation() {
             await window.webln.enable();
             const lightningAddress = document.querySelector('meta[name="lightning"]').content;
             const amount = parseInt(document.getElementById('amount').value);
+            const message = document.getElementById('message').value || "Donasi untuk situs web";
+            
+            if (amount < 1 || amount > 50000) {
+                messageDiv.textContent = "Amount must be between 1 and 50,000 satoshi.";
+                messageDiv.classList.add('error');
+                return;
+            }
+
             const invoice = await window.webln.makeInvoice({
                 amount: amount,
-                defaultMemo: "Donasi untuk situs web"
+                defaultMemo: message
             });
             await window.webln.sendPayment(invoice.paymentRequest);
 
@@ -31,7 +57,7 @@ async function makeDonation() {
                 timeZone: 'Asia/Jakarta', 
                 dateStyle: 'short', 
                 timeStyle: 'short' 
-            }); // Format: "17/05/25, 02:53"
+            });
             const donation = {
                 amount: amount,
                 time: donationTime
