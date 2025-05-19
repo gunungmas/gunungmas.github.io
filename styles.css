@@ -6,8 +6,15 @@ body {
     margin: 0;
 }
 
-h1, h2 {
+h1 {
+    font-size: 24px;
     color: #333;
+    margin-bottom: 20px;
+}
+
+h2 {
+    color: #333;
+    font-size: 20px;
 }
 
 .section {
@@ -19,6 +26,82 @@ h1, h2 {
     background-color: white;
 }
 
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+label {
+    font-size: 16px;
+    color: #333;
+    margin-bottom: 10px;
+    align-self: flex-start;
+}
+
+.amount-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+input[type="number"] {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 100px;
+    text-align: center;
+}
+
+.usd-value {
+    font-size: 16px;
+    color: #555;
+}
+
+.amount-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.amount-buttons button {
+    padding: 8px 15px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: white;
+    cursor: pointer;
+    color: #333;
+}
+
+.amount-buttons button:hover {
+    background-color: #f0f0f0;
+}
+
+.range-info {
+    font-size: 12px;
+    color: #e74c3c;
+    margin-bottom: 20px;
+}
+
+textarea {
+    width: 100%;
+    max-width: 400px;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    resize: none;
+    height: 60px;
+}
+
+textarea::placeholder {
+    color: #999;
+}
+
 .donate-button {
     background-color: #f7931a;
     color: white;
@@ -27,26 +110,16 @@ h1, h2 {
     border-radius: 5px;
     cursor: pointer;
     font-size: 18px;
-    margin: 10px;
+    width: 100%;
+    max-width: 400px;
 }
 
 .donate-button:hover {
     background-color: #e68a00;
 }
 
-select {
-    padding: 10px;
-    font-size: 16px;
-    margin: 10px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    width: 200px;
-}
-
-p {
-    font-size: 16px;
-    color: #555;
-}
+.donation-message {
+調べ
 
 .donation-message {
     margin-top: 20px;
@@ -58,7 +131,6 @@ p {
     color: #e74c3c;
 }
 
-/* Gaya untuk tabel riwayat donasi */
 .history-container {
     margin-top: 30px;
 }
@@ -90,8 +162,15 @@ p {
         padding: 10px;
     }
 
-    select {
+    input[type="number"],
+    textarea,
+    .donate-button {
         width: 100%;
+    }
+
+    .amount-buttons {
+        flex-wrap: wrap;
+        justify-content: center;
     }
 
     #donation-history th, #donation-history td {
