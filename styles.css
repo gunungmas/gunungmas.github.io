@@ -17,12 +17,6 @@ h2 {
     font-size: 20px;
 }
 
-h3 {
-    font-size: 18px;
-    color: #333;
-    margin-bottom: 10px;
-}
-
 .section {
     margin: 40px auto;
     padding: 20px;
@@ -134,19 +128,6 @@ textarea::placeholder {
     color: #e74c3c;
 }
 
-.qr-code-container {
-    margin-top: 20px;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    background-color: #fff;
-}
-
-#qrcode {
-    display: flex;
-    justify-content: center;
-}
-
 .history-container {
     margin-top: 30px;
 }
@@ -192,11 +173,5 @@ textarea::placeholder {
     #donation-history th, #donation-history td {
         font-size: 14px;
         padding: 5px;
-    }
-
-    #qrcode {
-        width: 150px;
-        height: 150px;
-        margin: 0 auto;
     }
 }
