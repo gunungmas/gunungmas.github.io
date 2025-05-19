@@ -1,58 +1,61 @@
-// Load donation history from localStorage or initialize empty array
 let donationHistory = JSON.parse(localStorage.getItem('donationHistory')) || [];
 
-// Render donation history on page load
 document.addEventListener('DOMContentLoaded', () => {
     renderDonationHistory();
-    updateUsdValue(); // Update USD value on page load
+    updateUsdValue();
 });
 
-// Function to set amount when buttons are clicked
 function setAmount(value) {
     const amountInput = document.getElementById('amount');
     amountInput.value = value;
     updateUsdValue();
 }
 
-// Function to update USD value (using a static conversion rate for demo purposes)
 function updateUsdValue() {
     const amount = parseInt(document.getElementById('amount').value);
-    const usdValue = (amount * 0.0001).toFixed(2); // Static rate: 1 sat = $0.0001 (for demo)
+    const usdValue = (amount * 0.0001).toFixed(2);
     document.querySelector('.usd-value').textContent = `$${usdValue}`;
 }
 
-// Add event listener to update USD value when amount changes
 document.getElementById('amount').addEventListener('input', updateUsdValue);
 
-// Fungsi untuk donasi
 async function makeDonation() {
     const messageDiv = document.getElementById('donation-message');
     const qrCodeContainer = document.getElementById('qr-code-container');
     const qrCodeDiv = document.getElementById('qrcode');
     messageDiv.textContent = '';
     messageDiv.classList.remove('error');
-    qrCodeContainer.style.display = 'none'; // Hide QR code initially
-    qrCodeDiv.innerHTML = ''; // Clear previous QR code
+    qrCodeContainer.style.display = 'none';
+    qrCodeDiv.innerHTML = '';
+
+    const amount = parseInt(document.getElementById('amount').value);
+    const message = document.getElementById('message').value || "Donasi untuk situs web";
+
+    if (amount < 1 || amount > 50000) {
+        messageDiv.textContent = "Jumlah harus antara 1 dan 50,000 satoshi.";
+        messageDiv.classList.add('error');
+        return;
+    }
 
     try {
+        if (typeof QRCode === 'undefined') {
+            messageDiv.textContent = "Gagal memuat library QR Code. Pastikan kamu terhubung ke internet.";
+            messageDiv.classList.add('error');
+            return;
+        }
+
         if (window.webln) {
+            console.log("WebLN terdeteksi, mencoba membuat invoice...");
             await window.webln.enable();
             const lightningAddress = document.querySelector('meta[name="lightning"]').content;
-            const amount = parseInt(document.getElementById('amount').value);
-            const message = document.getElementById('message').value || "Donasi untuk situs web";
-            
-            if (amount < 1 || amount > 50000) {
-                messageDiv.textContent = "Amount must be between 1 and 50,000 satoshi.";
-                messageDiv.classList.add('error');
-                return;
-            }
+            console.log("Lightning Address:", lightningAddress);
 
             const invoice = await window.webln.makeInvoice({
                 amount: amount,
                 defaultMemo: message
             });
+            console.log("Invoice berhasil dibuat:", invoice.paymentRequest);
 
-            // Generate QR code with the payment request
             qrCodeContainer.style.display = 'block';
             new QRCode(qrCodeDiv, {
                 text: invoice.paymentRequest,
@@ -62,45 +65,45 @@ async function makeDonation() {
                 colorLight: "#ffffff",
                 correctLevel: QRCode.CorrectLevel.H
             });
+            messageDiv.textContent = "Silakan scan kode QR untuk membayar.";
 
-            // Attempt to send payment via WebLN
-            await window.webln.sendPayment(invoice.paymentRequest);
+            try {
+                console.log("Mencoba mengirim pembayaran via WebLN...");
+                await window.webln.sendPayment(invoice.paymentRequest);
+                messageDiv.textContent = `Terima kasih atas donasi sebesar ${amount} satoshi!`;
+                qrCodeContainer.style.display = 'none';
 
-            // Tampilkan pesan konfirmasi di halaman
-            messageDiv.textContent = `Terima kasih atas donasi sebesar ${amount} satoshi!`;
-            qrCodeContainer.style.display = 'none'; // Hide QR code after successful payment
-
-            // Simpan donasi ke riwayat
-            const donationTime = new Date().toLocaleString('id-ID', { 
-                timeZone: 'Asia/Jakarta', 
-                dateStyle: 'short', 
-                timeStyle: 'short' 
-            });
-            const donation = {
-                amount: amount,
-                time: donationTime
-            };
-            donationHistory.push(donation);
-            localStorage.setItem('donationHistory', JSON.stringify(donationHistory));
-
-            // Perbarui tabel riwayat
-            renderDonationHistory();
+                const donationTime = new Date().toLocaleString('id-ID', { 
+                    timeZone: 'Asia/Jakarta', 
+                    dateStyle: 'short', 
+                    timeStyle: 'short' 
+                });
+                const donation = {
+                    amount: amount,
+                    time: donationTime
+                };
+                donationHistory.push(donation);
+                localStorage.setItem('donationHistory', JSON.stringify(donationHistory));
+                renderDonationHistory();
+            } catch (paymentError) {
+                console.error("Gagal mengirim pembayaran via WebLN:", paymentError);
+                messageDiv.textContent = "Gagal mengirim donasi via WebLN. Silakan scan kode QR untuk membayar.";
+                messageDiv.classList.add('error');
+            }
         } else {
-            messageDiv.textContent = "Ekstensi Lightning (seperti Alby) tidak terdeteksi. Silakan instal ekstensi Alby atau dompet Lightning lainnya.";
+            messageDiv.textContent = "Ekstensi Lightning (seperti Alby) tidak terdeteksi. Silakan instal ekstensi Alby untuk melanjutkan.";
             messageDiv.classList.add('error');
         }
     } catch (error) {
         console.error("Error saat memproses donasi:", error);
-        messageDiv.textContent = "Gagal memproses donasi. Scan the QR code to pay manually, or ensure your Lightning wallet is active.";
+        messageDiv.textContent = "Terjadi kesalahan: " + error.message + ". Pastikan dompet Lightning aktif atau coba lagi.";
         messageDiv.classList.add('error');
-        // Keep QR code visible if payment fails, so the user can scan it
     }
 }
 
-// Fungsi untuk menampilkan riwayat donasi di tabel
 function renderDonationHistory() {
     const historyBody = document.getElementById('history-body');
-    historyBody.innerHTML = ''; // Bersihkan tabel sebelumnya
+    historyBody.innerHTML = '';
 
     donationHistory.forEach(donation => {
         const row = document.createElement('tr');
