@@ -1,10 +1,63 @@
 let donationHistory = JSON.parse(localStorage.getItem('donationHistory')) || [];
+let coffeeAmount = 1; // Default jumlah kopi
+const coffeePrice = 3; // Harga per kopi dalam USD
 
 document.addEventListener('DOMContentLoaded', () => {
     renderDonationHistory();
     updateUsdValue();
 });
 
+// Fungsi untuk menampilkan section support setelah klik Find Profile
+function showSupportSection() {
+    const zapInitial = document.getElementById('zap-initial');
+    const supportSection = document.getElementById('support-section');
+    const npubInput = document.getElementById('npub').value.trim();
+
+    if (npubInput === '') {
+        alert('Please enter a valid npub or email address.');
+        return;
+    }
+
+    zapInitial.style.display = 'none';
+    supportSection.style.display = 'block';
+    updateSupportButton();
+}
+
+// Fungsi untuk mengatur jumlah kopi
+function setCoffeeAmount(amount) {
+    coffeeAmount = amount;
+    document.getElementById('coffee-amount').value = amount;
+
+    // Update tombol aktif
+    const buttons = document.querySelectorAll('.coffee-button');
+    buttons.forEach(button => {
+        button.classList.remove('active');
+        if (parseInt(button.textContent) === amount) {
+            button.classList.add('active');
+        }
+    });
+
+    updateSupportButton();
+}
+
+// Fungsi untuk memperbarui teks tombol Support
+function updateSupportButton() {
+    const totalPrice = coffeeAmount * coffeePrice;
+    const supportButton = document.querySelector('.support-button');
+    supportButton.textContent = `Support with $${totalPrice}`;
+}
+
+// Fungsi untuk menangani klik tombol Support
+async function submitSupport() {
+    const message = document.getElementById('support-message').value || "Support via coffee";
+    const totalPrice = coffeeAmount * coffeePrice;
+
+    // Untuk saat ini, kita hanya menampilkan alert sebagai simulasi
+    alert(`Thank you for supporting with ${coffeeAmount} coffee(s) worth $${totalPrice}! Message: ${message}`);
+    // Jika Anda ingin mengintegrasikan dengan WebLN untuk pembayaran, Anda bisa menambahkan logika serupa seperti makeDonation() di sini
+}
+
+// Fungsi untuk donasi satoshi (tidak berubah)
 function setAmount(value) {
     const amountInput = document.getElementById('amount');
     amountInput.value = value;
