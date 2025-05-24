@@ -45,8 +45,8 @@
 
     <!-- Layout utama -->
     <div class="container">
-        <!-- Bagian Zap me a coffee -->
-        <div class="zap-section">
+        <!-- Bagian Zap me a coffee (Tampilan Awal) -->
+        <div class="zap-section" id="zap-initial">
             <div class="zap-header">
                 <div class="zap-logo">⚡</div>
                 <h1 class="zap-title">Zap me a coffee</h1>
@@ -54,11 +54,74 @@
             </div>
             <form class="zap-form">
                 <input type="text" class="zap-input" id="npub" placeholder="npub1... or user@domain.com" required>
-                <button type="button" class="zap-button">Find Profile</button>
+                <button type="button" class="zap-button" onclick="showSupportSection()">Find Profile</button>
             </form>
         </div>
 
-        <!-- Bagian Donasi -->
+        <!-- Bagian Support (Tampilan Setelah Klik Find Profile) -->
+        <div class="support-section" id="support-section" style="display: none;">
+            <div class="support-header">
+                <div class="profile-image" style="background-image: url('https://blossom.primal.net/94107e488b08b6bf829c88004eda696cd44b2e597dfa0768ed082c72b610cd3a.jpg');"></div>
+                <h1 class="support-title">Zap naked a coffee</h1>
+            </div>
+            <div class="coffee-options">
+                <div class="coffee-icon">☕️</div>
+                <span class="coffee-multiplier">×</span>
+                <div class="coffee-buttons">
+                    <button type="button" class="coffee-button active" onclick="setCoffeeAmount(1)">1</button>
+                    <button type="button" class="coffee-button" onclick="setCoffeeAmount(3)">3</button>
+                    <button type="button" class="coffee-button" onclick="setCoffeeAmount(5)">5</button>
+                    <input type="text" class="coffee-input" id="coffee-amount" placeholder="10" inputmode="numeric" value="1">
+                </div>
+            </div>
+            <div class="message-input">
+                <textarea id="support-message" placeholder="Say something nice..."></textarea>
+            </div>
+            <button type="button" class="support-button" onclick="submitSupport()">Support with $3</button>
+            <div class="share-section">
+                <button class="share-button hidden sm:flex">
+                    <svg class="share-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M8.68439 10.6578L15.3124 7.34375M15.3156 16.6578L8.69064 13.3469M21 6C21 7.65685 19.6569 9 18 9C16.3431 9 15 7.65685 15 6C15 4.34315 16.3431 3 18 3C19.6569 3 21 4.34315 21 6ZM21 18C21 19.6569 19.6569 21 18 21C16.3431 21 15 19.6569 15 18C15 16.3431 16.3431 15 18 15C19.6569 15 21 16.3431 21 18ZM9 12C9 13.6569 7.65685 15 6 15C4.34315 15 3 13.6569 3 12C3 10.3431 4.34315 9 6 9C7.65685 9 9 10.3431 9 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg>
+                    Share page
+                </button>
+                <div class="share-buttons-mobile flex sm:hidden">
+                    <button class="share-option">
+                        <svg class="share-option-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect>
+                            <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>
+                        </svg>
+                    </button>
+                    <button class="share-option">
+                        <svg class="share-option-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path>
+                        </svg>
+                    </button>
+                    <button class="share-option">
+                        <svg class="share-option-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M9.198 21.5h4v-8.01h3.604l.396-3.98h-4V7.5a1 1 0 0 1 1-1h3v-4h-3a5 5 0 0 0-5 5v2.01h-2l-.396 3.98h2.396v8.01Z"></path>
+                        </svg>
+                    </button>
+                    <button class="share-option">
+                        <svg class="share-option-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="16 18 22 12 16 6"></polyline>
+                            <polyline points="8 6 2 12 8 18"></polyline>
+                        </svg>
+                    </button>
+                    <button class="share-option">
+                        <svg class="share-option-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M3 3h6v6H3V3zm1.5 1.5v3h3v-3h-3z"></path>
+                            <path d="M3 15h6v6H3v-6zm1.5 1.5v3h3v-3h-3z"></path>
+                            <path d="M15 3h6v6h-6V3zm1.5 1.5v3h3v-3h-3z"></path>
+                            <path d="M13.5 10.5H15v3h-1.5v-3zm0 4.5H15v3h-1.5v-3zm3-3H18v3h-1.5v-3zm0 4.5H18v3h-1.5v-3zm-6-6H12v3h-1.5v-3zm0 4.5H12v3h-1.5v-3z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <p class="payment-info">Using WebLN for payments</p>
+        </div>
+
+        <!-- Bagian Donasi (Tetap Ada) -->
         <div class="donation-section">
             <h2 class="section-title">Support Sapi Bot</h2>
             <form id="donation-form" class="donation-form">
