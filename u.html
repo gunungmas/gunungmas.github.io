@@ -13,7 +13,7 @@
 <div class="popup" id="popup">
   <h2>Penawaran Spesial!</h2>
   <p>Dapatkan diskon 20% untuk pembelian pertama Anda! <a href="https://example.com/offer" class="popup-link">Klaim Sekarang</a></p>
-  <img src="https://r2.primal.net/cache/2/0e/97/20e97b0978d426507d14bb09772dfe5c08cc59f4b71ed3c4eda8f6db52440b20.jpg" alt="Promo Image" class="popup-image">
+  <img src="https://r2.primal.net/cache/2/0e/97/20e97b0978d426507d14bb09772dfe5c08cc59f4b71ed3c4eda8f6db52440b20.jpg" alt="Promo Image" class="popup-image" onclick="toggleImageSize()">
   <button class="custom-button" onclick="closePopup()">Tutup</button>
 </div>
 
@@ -80,6 +80,12 @@
     height: auto;
     margin: 10px 0;
     border-radius: 5px;
+    cursor: pointer; /* Menunjukkan bahwa gambar bisa diklik */
+    transition: max-width 0.3s ease; /* Animasi halus untuk perubahan ukuran */
+  }
+
+  .popup-image.small {
+    max-width: 50%; /* Ukuran lebih kecil saat diklik */
   }
 
   /* Styling untuk popup */
@@ -122,6 +128,12 @@
   function closePopup() {
     document.getElementById('popup').style.display = 'none';
     document.getElementById('popupOverlay').style.display = 'none';
+  }
+
+  // Fungsi untuk mengubah ukuran gambar saat diklik
+  function toggleImageSize() {
+    const image = document.querySelector('.popup-image');
+    image.classList.toggle('small'); // Menambah/menghapus kelas 'small' untuk mengubah ukuran
   }
 
   // Pesan konsol saat halaman dimuat
