@@ -25,30 +25,6 @@ document.getElementById('amount').addEventListener('input', () => {
     updateUsdValue();
 });
 
-// Fungsi untuk menampilkan kode QR
-function showQRCode(paymentRequest) {
-    console.log('Showing QR code for payment request:', paymentRequest);
-    const qrContainer = document.getElementById('qr-code-container');
-    const qrCodeDiv = document.getElementById('qrcode');
-    qrCodeDiv.innerHTML = '';
-    try {
-        QRCode.toCanvas(qrCodeDiv, paymentRequest, { width: 200 }, (error) => {
-            if (error) {
-                console.error('Failed to generate QR code:', error);
-                document.getElementById('donation-message').textContent = 'Gagal membuat kode QR.';
-                document.getElementById('donation-message').classList.add('error');
-            } else {
-                qrContainer.style.display = 'block';
-                document.getElementById('donation-message').textContent = 'Silakan pindai kode QR untuk menyelesaikan donasi.';
-            }
-        });
-    } catch (error) {
-        console.error('QRCode library error:', error);
-        document.getElementById('donation-message').textContent = 'Pustaka QR Code tidak dimuat. Silakan coba lagi.';
-        document.getElementById('donation-message').classList.add('error');
-    }
-}
-
 async function makeDonation() {
     console.log('makeDonation called');
     const messageDiv = document.getElementById('donation-message');
@@ -101,25 +77,14 @@ async function makeDonation() {
             localStorage.setItem('donationHistory', JSON.stringify(donationHistory));
             renderDonationHistory();
         } else {
-            console.log('WebLN not available, showing QR code fallback...');
-            messageDiv.textContent = 'Ekstensi Lightning (seperti Alby) tidak terdeteksi. Menampilkan kode QR untuk donasi.';
+            console.log('WebLN not available');
+            messageDiv.textContent = 'Ekstensi Lightning (seperti Alby) tidak terdeteksi. Silakan instal ekstensi Alby untuk melanjutkan.';
             messageDiv.classList.add('error');
-
-            // Invoice statis untuk pengujian (ganti dengan Alby API di produksi)
-            const staticInvoice = 'lnbc1...'; // Ganti dengan invoice Lightning valid untuk pengujian
-            showQRCode(staticInvoice);
-
-            // Catatan: Riwayat tidak diperbarui untuk kode QR karena memerlukan verifikasi server-side
         }
     } catch (error) {
         console.error('Error processing donation:', error);
-        messageDiv.textContent = 'Gagal memproses donasi: ' + error.message + '. Pastikan dompet Lightning aktif atau pindai kode QR.';
+        messageDiv.textContent = 'Gagal memproses donasi: ' + error.message + '. Pastikan dompet Lightning aktif.';
         messageDiv.classList.add('error');
-
-        if (error.paymentRequest) {
-            console.log('Error includes payment request, showing QR code...');
-            showQRCode(error.paymentRequest);
-        }
     }
 }
 
