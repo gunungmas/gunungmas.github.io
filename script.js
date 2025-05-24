@@ -12,14 +12,14 @@ function setAmount(value) {
 }
 
 function updateUsdValue() {
-    const amount = parseInt(document.getElementById('amount').value);
+    const amount = parseInt(document.getElementById('amount').value) || 0;
     const usdValue = (amount * 0.0001).toFixed(2);
     document.querySelector('.usd-value').textContent = `$${usdValue}`;
 }
 
 document.getElementById('amount').addEventListener('input', updateUsdValue);
 
-// Fungsi placeholder untuk mengambil invoice dari server
+// Fungsi untuk membuat invoice menggunakan Alby API
 async function fetchInvoiceFromServer(amount, memo) {
     const albyApiUrl = 'https://api.getalby.com/invoices';
     const accessToken = 'YOUR_ALBY_ACCESS_TOKEN'; // Ganti dengan access token dari Alby Developer Portal
@@ -44,9 +44,48 @@ async function fetchInvoiceFromServer(amount, memo) {
         }
 
         const data = await response.json();
-        return data.payment_request; // Kembalikan string bolt11
+        return { paymentRequest: data.payment_request, paymentHash: data.payment_hash };
     } catch (error) {
         throw new Error('Gagal membuat invoice dari Alby API: ' + error.message);
+    }
+}
+
+// Fungsi untuk memeriksa status invoice
+async function checkInvoiceStatus(paymentHash, amount, message) {
+    const albyApiUrl = `https://api.getalby.com/invoices/${paymentHash}`;
+    const accessToken = 'YOUR_ALBY_ACCESS_TOKEN';
+
+    try {
+        const response = await fetch(albyApiUrl, {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        const data = await response.json();
+        if (data.settled) {
+            const donationTime = new Date().toLocaleString('id-ID', {
+                timeZone: 'Asia/Jakarta',
+                dateStyle: 'short',
+                timeStyle: 'short'
+            });
+            const donation = {
+                amount: amount,
+                time: donationTime,
+                message: message
+            };
+            donationHistory.push(donation);
+            localStorage.setItem('donationHistory', JSON.stringify(donationHistory));
+            renderDonationHistory();
+            document.getElementById('donation-message').textContent = `Terima kasih atas donasi sebesar ${amount} satoshi!`;
+            document.getElementById('donation-message').classList.remove('error');
+            document.getElementById('qr-code-container').style.display = 'none';
+            return true;
+        }
+        return false;
+    } catch (error) {
+        console.error('Gagal memeriksa status invoice:', error);
+        return false;
     }
 }
 
@@ -54,13 +93,13 @@ async function fetchInvoiceFromServer(amount, memo) {
 function showQRCode(paymentRequest) {
     const qrContainer = document.getElementById('qr-code-container');
     const qrCodeDiv = document.getElementById('qrcode');
-    qrCodeDiv.innerHTML = ''; // Bersihkan kode QR sebelumnya
+    qrCodeDiv.innerHTML = '';
     QRCode.toCanvas(qrCodeDiv, paymentRequest, { width: 200 }, (error) => {
         if (error) {
             document.getElementById('donation-message').textContent = 'Gagal membuat kode QR.';
             document.getElementById('donation-message').classList.add('error');
         } else {
-            qrContainer.style.display = 'block'; // Tampilkan kontainer kode QR
+            qrContainer.style.display = 'block';
             document.getElementById('donation-message').textContent = 'Silakan pindai kode QR untuk menyelesaikan donasi.';
         }
     });
@@ -99,35 +138,50 @@ async function makeDonation() {
             messageDiv.textContent = `Terima kasih atas donasi sebesar ${amount} satoshi!`;
 
             const donationTime = new Date().toLocaleString('id-ID', {
-                timeZone: 'Asia/Jakarta',
+                timeZone:artist: 'Asia/Jakarta',
                 dateStyle: 'short',
                 timeStyle: 'short'
             });
             const donation = {
                 amount: amount,
                 time: donationTime,
-                message: message // Simpan pesan di riwayat
+                message: message // Simpan pesan
             };
             donationHistory.push(donation);
             localStorage.setItem('donationHistory', JSON.stringify(donationHistory));
             renderDonationHistory();
         } else {
-            // Fallback ke kode QR
-            console.log('WebLN tidak tersedia, mencoba membuat invoice via server...');
+            console.log('WebLN tidak tersedia, mencoba membuat invoice via Alby API...');
             messageDiv.textContent = 'Ekstensi Lightning (seperti Alby) tidak terdeteksi. Menampilkan kode QR untuk donasi.';
             messageDiv.classList.add('error');
 
-            const paymentRequest = await fetchInvoiceFromServer(amount, message);
+            const { paymentRequest, paymentHash } = await fetchInvoiceFromServer(amount, message);
             showQRCode(paymentRequest);
 
-            // Catatan: Riwayat donasi tidak diperbarui di sini karena pembayaran perlu diverifikasi server-side
+            // Polling untuk memeriksa status pembayaran
+            const maxPollTime = 5 * 60 * 1000; // 5 menit
+            const pollInterval = setInterval(async () => {
+                const isPaid = await checkInvoiceStatus(paymentHash, amount, message);
+                if (isPaid) {
+                    clearInterval(pollInterval);
+                }
+            }, 5000); // Periksa setiap 5 detik
+
+            // Hentikan polling setelah 5 menit
+            setTimeout(() => {
+                clearInterval(pollInterval);
+                if (messageDiv.textContent.includes('Silakan pindai kode QR')) {
+                    messageDiv.textContent = 'Waktu untuk memindai kode QR telah habis. Silakan coba lagi.';
+                    messageDiv.classList.add('error');
+                    document.getElementById('qr-code-container').style.display = 'none';
+                }
+            }, maxPollTime);
         }
     } catch (error) {
         console.error('Error saat memproses donasi:', error);
         messageDiv.textContent = 'Gagal memproses donasi: ' + error.message + '. Pastikan dompet Lightning aktif atau pindai kode QR.';
         messageDiv.classList.add('error');
 
-        // Jika error menyertakan paymentRequest, tampilkan kode QR
         if (error.paymentRequest) {
             showQRCode(error.paymentRequest);
         }
@@ -143,7 +197,7 @@ function renderDonationHistory() {
         row.innerHTML = `
             <td>${donation.amount}</td>
             <td>${donation.time}</td>
-            <td>${donation.message}</td>
+            <td>${donation.message || 'Tidak ada pesan'}</td>
         `;
         historyBody.appendChild(row);
     });
