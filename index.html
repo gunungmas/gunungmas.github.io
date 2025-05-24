@@ -1,27 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Meta tag dasar -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <meta name="theme-color" content="#FF4F00">
-    <!-- Meta tag untuk Lightning Address -->
     <meta name="lightning" content="evo@getalby.com" />
-
-    <!-- Judul -->
     <title>Lightning Network</title>
-
-    <!-- Impor file CSS -->
     <link rel="stylesheet" href="styles.css">
-
-    <!-- Script eksternal -->
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js" async></script>
     <script src="https://www.unpkg.com/nostr-login@latest/dist/unpkg.js" async></script>
 </head>
 <body>
-    <!-- Container utama -->
     <div class="container">
-        <!-- Bagian Donasi -->
         <div class="donation-section">
             <h2 class="section-title">Support Sapi Bot</h2>
             <form id="donation-form" class="donation-form">
@@ -45,16 +34,8 @@
                 </div>
                 <button type="button" class="donate-button" onclick="makeDonation()">⚡ Send Sats ⚡</button>
             </form>
-            <!-- Elemen untuk menampilkan pesan konfirmasi -->
             <div id="donation-message" class="donation-message"></div>
-            <!-- Container untuk QR Code -->
-            <div id="qr-code-container" class="qr-code-container" style="display: none;">
-                <h3>Scan to Pay</h3>
-                <div id="qrcode"></div>
-            </div>
         </div>
-
-        <!-- Tabel Riwayat Donasi -->
         <div class="history-section">
             <h2 class="section-title">Donation History</h2>
             <div class="table-container">
@@ -71,8 +52,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Impor script.js -->
     <script src="script.js"></script>
 </body>
 </html>
