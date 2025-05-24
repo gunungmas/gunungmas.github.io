@@ -21,25 +21,32 @@ document.getElementById('amount').addEventListener('input', updateUsdValue);
 
 // Fungsi placeholder untuk mengambil invoice dari server
 async function fetchInvoiceFromServer(amount, memo) {
-    // Ganti ini dengan panggilan API ke server atau layanan seperti Alby
-    // Contoh: panggil API Alby untuk membuat invoice berdasarkan lightning address
+    const albyApiUrl = 'https://api.getalby.com/invoices';
+    const accessToken = 'YOUR_ALBY_ACCESS_TOKEN'; // Ganti dengan access token dari Alby Developer Portal
+    const lightningAddress = 'evo@getalby.com';
+
     try {
-        const response = await fetch('https://api.getalby.com/invoices', {
+        const response = await fetch(albyApiUrl, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer YOUR_ALBY_API_KEY' // Ganti dengan API key Anda
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({
                 amount: amount,
                 description: memo,
-                lightning_address: 'evo@getalby.com'
+                lightning_address: lightningAddress
             })
         });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
         const data = await response.json();
         return data.payment_request; // Kembalikan string bolt11
     } catch (error) {
-        throw new Error('Gagal membuat invoice dari server: ' + error.message);
+        throw new Error('Gagal membuat invoice dari Alby API: ' + error.message);
     }
 }
 
@@ -98,7 +105,8 @@ async function makeDonation() {
             });
             const donation = {
                 amount: amount,
-                time: donationTime
+                time: donationTime,
+                message: message // Simpan pesan di riwayat
             };
             donationHistory.push(donation);
             localStorage.setItem('donationHistory', JSON.stringify(donationHistory));
@@ -109,7 +117,6 @@ async function makeDonation() {
             messageDiv.textContent = 'Ekstensi Lightning (seperti Alby) tidak terdeteksi. Menampilkan kode QR untuk donasi.';
             messageDiv.classList.add('error');
 
-            // Buat invoice melalui server
             const paymentRequest = await fetchInvoiceFromServer(amount, message);
             showQRCode(paymentRequest);
 
@@ -120,7 +127,7 @@ async function makeDonation() {
         messageDiv.textContent = 'Gagal memproses donasi: ' + error.message + '. Pastikan dompet Lightning aktif atau pindai kode QR.';
         messageDiv.classList.add('error');
 
-        // Jika error menyertakan paymentRequest (misalnya, invoice dibuat tapi pembayaran gagal), tampilkan kode QR
+        // Jika error menyertakan paymentRequest, tampilkan kode QR
         if (error.paymentRequest) {
             showQRCode(error.paymentRequest);
         }
@@ -136,6 +143,7 @@ function renderDonationHistory() {
         row.innerHTML = `
             <td>${donation.amount}</td>
             <td>${donation.time}</td>
+            <td>${donation.message}</td>
         `;
         historyBody.appendChild(row);
     });
