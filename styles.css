@@ -16,11 +16,11 @@ body {
 /* Container utama */
 .section {
     max-width: 600px;
-    margin: 40px auto;
+    margin: 0 auto;
+    background-color: white;
     padding: 30px;
     border-radius: 16px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-    background-color: white;
 }
 
 h1 {
@@ -179,31 +179,35 @@ textarea::placeholder {
     margin-top: 30px;
 }
 
-table {
+.table-container {
+    overflow-x: auto;
+}
+
+#donation-history {
     width: 100%;
     border-collapse: collapse;
     margin-top: 15px;
 }
 
-th, td {
+#donation-history th, #donation-history td {
     padding: 12px 15px;
     text-align: center;
     font-size: 14px;
 }
 
-th {
+#donation-history th {
     background-color: #f7f7f7;
     font-weight: 600;
     color: #333;
     border-bottom: 2px solid #ddd;
 }
 
-td {
+#donation-history td {
     color: #555;
     border-bottom: 1px solid #eee;
 }
 
-tr:last-child td {
+#donation-history tr:last-child td {
     border-bottom: none;
 }
 
@@ -214,8 +218,15 @@ tr:last-child td {
     }
 
     .section {
-        max-width: 100%;
         padding: 20px;
+    }
+
+    h1 {
+        font-size: 20px;
+    }
+
+    h2 {
+        font-size: 18px;
     }
 
     input[type="number"],
@@ -226,11 +237,9 @@ tr:last-child td {
 
     .amount-buttons {
         gap: 8px;
-        flex-wrap: wrap;
-        justify-content: center;
     }
 
-    th, td {
+    #donation-history th, #donation-history td {
         font-size: 13px;
         padding: 10px;
     }
