@@ -1,4 +1,3 @@
-/* Reset dan base styling */
 * {
     margin: 0;
     padding: 0;
@@ -13,7 +12,6 @@ body {
     padding: 20px;
 }
 
-/* Container utama */
 .container {
     max-width: 600px;
     margin: 0 auto;
@@ -22,7 +20,6 @@ body {
     gap: 30px;
 }
 
-/* Bagian Donasi */
 .donation-section {
     background-color: white;
     padding: 30px;
@@ -164,19 +161,6 @@ textarea::placeholder {
     color: #4CAF50;
 }
 
-/* QR Code Container */
-.qr-code-container {
-    margin-top: 20px;
-    text-align: center;
-}
-
-.qr-code-container h3 {
-    font-size: 18px;
-    font-weight: 600;
-    margin-bottom: 10px;
-}
-
-/* Bagian Riwayat Donasi */
 .history-section {
     background-color: white;
     padding: 30px;
@@ -216,14 +200,12 @@ textarea::placeholder {
     border-bottom: none;
 }
 
-/* Styling untuk kolom Message */
 #donation-history th:nth-child(3), #donation-history td:nth-child(3) {
-    max-width: 200px; /* Batasi lebar kolom Message */
-    word-wrap: break-word; /* Pecah kata jika terlalu panjang */
-    text-align: left; /* Rata kiri untuk teks pesan */
+    max-width: 200px;
+    word-wrap: break-word;
+    text-align: left;
 }
 
-/* Responsivitas */
 @media (max-width: 600px) {
     body {
         padding: 15px;
@@ -258,11 +240,10 @@ textarea::placeholder {
     }
 
     #donation-history th:nth-child(3), #donation-history td:nth-child(3) {
-        max-width: 100px; /* Kurangi lebar kolom Message pada layar kecil */
+        max-width: 100px;
     }
 }
 
-/* Utility untuk visibility */
 .hidden {
     display: none !important;
 }
