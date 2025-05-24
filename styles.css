@@ -216,6 +216,13 @@ textarea::placeholder {
     border-bottom: none;
 }
 
+/* Styling untuk kolom Message */
+#donation-history th:nth-child(3), #donation-history td:nth-child(3) {
+    max-width: 200px; /* Batasi lebar kolom Message */
+    word-wrap: break-word; /* Pecah kata jika terlalu panjang */
+    text-align: left; /* Rata kiri untuk teks pesan */
+}
+
 /* Responsivitas */
 @media (max-width: 600px) {
     body {
@@ -248,6 +255,10 @@ textarea::placeholder {
     #donation-history th, #donation-history td {
         font-size: 13px;
         padding: 10px;
+    }
+
+    #donation-history th:nth-child(3), #donation-history td:nth-child(3) {
+        max-width: 100px; /* Kurangi lebar kolom Message pada layar kecil */
     }
 }
 
