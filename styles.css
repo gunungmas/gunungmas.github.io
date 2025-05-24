@@ -226,20 +226,9 @@ textarea::placeholder {
         gap: 20px;
     }
 
-    .zap-section,
-    .support-section,
     .donation-section,
     .history-section {
         padding: 20px;
-    }
-
-    .zap-title,
-    .support-title {
-        font-size: 24px;
-    }
-
-    .zap-subtitle {
-        font-size: 14px;
     }
 
     .section-title {
@@ -247,25 +236,9 @@ textarea::placeholder {
     }
 
     input[type="number"],
-    .zap-input,
-    .coffee-input,
     textarea,
-    .zap-button,
-    .support-button,
     .donate-button {
         width: 100%;
-    }
-
-    .coffee-button {
-        width: 48px;
-        height: 48px;
-        font-size: 18px;
-    }
-
-    .coffee-input {
-        width: 48px;
-        height: 48px;
-        font-size: 18px;
     }
 
     .amount-buttons {
@@ -276,36 +249,9 @@ textarea::placeholder {
         font-size: 13px;
         padding: 10px;
     }
-
-    .share-buttons-mobile {
-        gap: 6px;
-    }
-
-    .share-option {
-        padding: 10px;
-    }
-
-    .share-option-icon {
-        width: 18px;
-        height: 18px;
-    }
 }
 
 /* Utility untuk visibility */
 .hidden {
     display: none !important;
-}
-
-.sm\:flex {
-    display: none;
-}
-
-@media (min-width: 640px) {
-    .sm\:flex {
-        display: flex;
-    }
-
-    .sm\:hidden {
-        display: none !important;
-    }
 }
