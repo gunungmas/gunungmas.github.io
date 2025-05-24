@@ -1,70 +1,120 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Meta tag dasar -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="theme-color" content="#FF4F00">
+    <meta name="description" content="Buy a coffee for your favorite nostrich">
+    <meta name="generator" content="v0.dev">
     <!-- Meta tag untuk Lightning Address -->
     <meta name="lightning" content="evo@getalby.com" />
-    <title>Lightning Network</title>
-    <!-- Impor file CSS -->
-    <link rel="stylesheet" href="styles.css">
-    <!-- Impor QRCode.js dari CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
-    <script src='https://www.unpkg.com/nostr-login@latest/dist/unpkg.js'></script>
+
+    <!-- Judul -->
+    <title>Zap me a coffee</title>
+
+    <!-- Preload dan stylesheet -->
+    <link rel="preload" href="/fonts/custom-font.woff2" as="font" crossorigin="" type="font/woff2">
+    <link rel="preload" as="image" href="/images/logo.svg">
+    <link rel="stylesheet" href="/styles.css" data-precedence="next">
+
+    <!-- Favicon dan ikon -->
+    <link rel="icon" href="/favicon.ico" sizes="16x16">
+    <link rel="icon" href="/icon-16x16.png" sizes="16x16">
+    <link rel="icon" href="/icon-32x32.png" sizes="32x32">
+    <link rel="icon" href="/icon-64x64.png" sizes="64x64">
+    <link rel="icon" href="/icon-192x192.png" sizes="192x192">
+    <link rel="icon" href="/icon-256x256.png" sizes="256x256">
+    <link rel="icon" href="/icon-512x512.png" sizes="512x512">
+    <link rel="apple-touch-icon" href="/apple-icon.png" sizes="192x192">
+    <link rel="manifest" href="/manifest.webmanifest">
+
+    <!-- Script preload dan async -->
+    <link rel="preload" as="script" fetchpriority="low" href="/scripts/chunks/main-app.js">
+    <script src="/scripts/chunks/main-app.js" async=""></script>
+    <script src="/scripts/chunks/polyfills.js" nomodule=""></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js" async=""></script>
+    <script src="https://www.unpkg.com/nostr-login@latest/dist/unpkg.js" async=""></script>
 </head>
-<body>
-    <!-- Bagian Donasi -->
-    <div class="section">
-        <!-- Bagian Zap me a coffee -->
-        <div class="zap-container">
-            <h1 class="zap-title">⚡ Zap me a coffee</h1>
-            <p class="zap-subtitle">Buy a coffee for your favorite nostrich</p>
-            <input type="text" class="zap-input" placeholder="npub1... or user@domain.com" />
-            <button type="button" class="zap-button">Find Profile</button>
-        </div>
+<body class="bg-stone-100">
+    <!-- Script Next.js-like -->
+    <script>
+        (self.__next_f=self.__next_f||[]).push([0]);
+        self.__next_f.push([1, "1:\"$Sreact.fragment\"\n"]);
+    </script>
 
-        <h1>Sapi Bot</h1>
-        <form id="donation-form">
-            <label for="amount">Amount</label>
-            <div class="amount-container">
-                <input type="number" id="amount" name="amount" value="100" min="1" max="50000" required />
-                <span class="usd-value">$0.10</span>
+    <!-- Layout utama -->
+    <div class="flex items-center justify-center min-h-screen py-12">
+        <div class="text-card-foreground w-full max-w-md rounded-[2rem] overflow-hidden border-0 shadow-none bg-transparent">
+            <!-- Bagian Zap me a coffee -->
+            <div class="flex flex-col space-y-1.5 text-center sm:p-2 p-4 pb-0">
+                <div class="flex flex-col items-center">
+                    <div class="w-16 h-16 mb-4 relative">
+                        <img alt="Zap me a coffee logo" width="64" height="64" decoding="async" src="/images/logo.svg" style="color: transparent; width: 100%; height: 100%;">
+                    </div>
+                    <div class="tracking-tight text-3xl font-extrabold !font-bold">⚡ Zap me a coffee</div>
+                    <div class="text-sm text-muted-foreground">Buy a coffee for your favorite nostrich</div>
+                </div>
             </div>
-            <div class="amount-buttons">
-                <button type="button" onclick="setAmount(1)">1 ⚡</button>
-                <button type="button" onclick="setAmount(10)">10 ⚡</button>
-                <button type="button" onclick="setAmount(100)">100 ⚡</button>
-                <button type="button" onclick="setAmount(1000)">1k ⚡</button>
-            </div>
-            <p class="range-info">between 1 and 50,000 sats</p>
-            <label for="message">Message</label>
-            <textarea id="message" name="message" placeholder="optional"></textarea>
-            <button type="button" class="donate-button" onclick="makeDonation()">⚡ Send Sats ⚡</button>
-        </form>
-        <!-- Elemen untuk menampilkan pesan konfirmasi -->
-        <div id="donation-message" class="donation-message"></div>
-        <!-- Container untuk QR Code -->
-        <div id="qr-code-container" class="qr-code-container" style="display: none;">
-            <h3>Scan to Pay</h3>
-            <div id="qrcode"></div>
-        </div>
+            <form>
+                <div class="sm:px-6 sm:py-2 p-2">
+                    <div class="grid w-full items-center gap-2">
+                        <div class="flex flex-col space-y-1.5">
+                            <input class="flex w-full border border-input bg-background text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm rounded-full !text-xl h-14 py-0 px-5 [&:not(:placeholder-shown)]:!text-xl [&::placeholder]:!text-lg" id="npub" placeholder="npub1... or user@domain.com" required="" value="">
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center p-6 sm:px-6 sm:pt-2 sm:pb-4 px-4 pt-2 pb-4">
+                    <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 text-primary-foreground px-4 py-2 w-full bg-orange-500 hover:bg-orange-600 rounded-full text-lg font-medium h-14" type="button">Find Profile</button>
+                </div>
+            </form>
 
-        <!-- Tabel Riwayat Donasi -->
-        <div class="history-container">
-            <h2>Riwayat Donasi</h2>
-            <table id="donation-history">
-                <thead>
-                    <tr>
-                        <th>Jumlah (Satoshi)</th>
-                        <th>Waktu</th>
-                    </tr>
-                </thead>
-                <tbody id="history-body"></tbody>
-            </table>
+            <!-- Bagian Donasi -->
+            <div class="section">
+                <h1>Sapi Bot</h1>
+                <form id="donation-form">
+                    <label for="amount">Amount</label>
+                    <div class="amount-container">
+                        <input type="number" id="amount" name="amount" value="100" min="1" max="50000" required />
+                        <span class="usd-value">$0.10</span>
+                    </div>
+                    <div class="amount-buttons">
+                        <button type="button" onclick="setAmount(1)">1 ⚡</button>
+                        <button type="button" onclick="setAmount(10)">10 ⚡</button>
+                        <button type="button" onclick="setAmount(100)">100 ⚡</button>
+                        <button type="button" onclick="setAmount(1000)">1k ⚡</button>
+                    </div>
+                    <p class="range-info">between 1 and 50,000 sats</p>
+                    <label for="message">Message</label>
+                    <textarea id="message" name="message" placeholder="optional"></textarea>
+                    <button type="button" class="donate-button" onclick="makeDonation()">⚡ Send Sats ⚡</button>
+                </form>
+                <!-- Elemen untuk menampilkan pesan konfirmasi -->
+                <div id="donation-message" class="donation-message"></div>
+                <!-- Container untuk QR Code -->
+                <div id="qr-code-container" class="qr-code-container" style="display: none;">
+                    <h3>Scan to Pay</h3>
+                    <div id="qrcode"></div>
+                </div>
+
+                <!-- Tabel Riwayat Donasi -->
+                <div class="history-container">
+                    <h2>Riwayat Donasi</h2>
+                    <table id="donation-history">
+                        <thead>
+                            <tr>
+                                <th>Jumlah (Satoshi)</th>
+                                <th>Waktu</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-body"></tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- Impor script.js -->
-    <script src="script.js"></script>
+    <script src="/scripts/script.js" async=""></script>
 </body>
 </html>
