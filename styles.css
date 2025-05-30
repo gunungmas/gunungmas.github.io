@@ -1,3 +1,4 @@
+/* Reset default styles */
 * {
     margin: 0;
     padding: 0;
@@ -206,6 +207,25 @@ textarea::placeholder {
     text-align: left;
 }
 
+/* Tambahan untuk elemen baru dari kode gabungan */
+#invoice {
+    margin-top: 15px;
+    font-size: 14px;
+    color: #333;
+    background-color: #fafafa;
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    word-break: break-all;
+    text-align: center;
+}
+
+bc-button {
+    display: inline-block;
+    margin-top: 10px;
+}
+
+/* Responsivitas */
 @media (max-width: 600px) {
     body {
         padding: 15px;
@@ -241,6 +261,11 @@ textarea::placeholder {
 
     #donation-history th:nth-child(3), #donation-history td:nth-child(3) {
         max-width: 100px;
+    }
+
+    #invoice {
+        font-size: 13px;
+        padding: 8px;
     }
 }
 
