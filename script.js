@@ -1,43 +1,93 @@
+// Impor modul eksternal
 import confetti from 'https://cdn.skypack.dev/canvas-confetti';
 import { requestProvider } from 'https://esm.sh/@getalby/bitcoin-connect@3.8.0';
 import { LightningAddress } from 'https://esm.sh/@getalby/lightning-tools@5.1.2';
 
-let donationHistory = JSON.parse(localStorage.getItem('donationHistory')) || [];
+// Inisialisasi donationHistory
+let donationHistory = [];
+try {
+    donationHistory = JSON.parse(localStorage.getItem('donationHistory')) || [];
+} catch (error) {
+    console.error('Error parsing localStorage donationHistory:', error);
+    donationHistory = [];
+}
 
+// Fungsi untuk memeriksa apakah elemen DOM tersedia
+function checkElement(id) {
+    const element = document.getElementById(id);
+    if (!element) {
+        console.error(`Element with ID "${id}" not found`);
+        return null;
+    }
+    return element;
+}
+
+// Event listener untuk DOMContentLoaded
 document.addEventListener('DOMContentLoaded', () => {
     console.log('DOM loaded, rendering donation history...');
-    renderDonationHistory();
+    const historyBody = checkElement('history-body');
+    if (historyBody) {
+        renderDonationHistory();
+    }
     updateUsdValue();
 });
 
-// Pastikan fungsi tersedia untuk event handler HTML
+// Fungsi untuk mengatur jumlah donasi
 window.setAmount = function(value) {
     console.log('Setting amount to:', value);
-    const amountInput = document.getElementById('amount');
-    amountInput.value = value;
-    updateUsdValue();
+    const amountInput = checkElement('amount');
+    if (amountInput) {
+        amountInput.value = value;
+        updateUsdValue();
+    }
 };
 
+// Fungsi untuk memperbarui nilai USD
 window.updateUsdValue = function() {
     console.log('Updating USD value...');
-    const amount = parseInt(document.getElementById('amount').value) || 0;
+    const amountInput = checkElement('amount');
+    const usdValueSpan = document.querySelector('.usd-value');
+    if (!amountInput || !usdValueSpan) {
+        console.error('Amount input or usd-value span not found');
+        return;
+    }
+    const amount = parseInt(amountInput.value) || 0;
     const usdValue = (amount * 0.0001).toFixed(2);
-    document.querySelector('.usd-value').textContent = `$${usdValue}`;
+    usdValueSpan.textContent = `$${usdValue}`;
 };
 
-document.getElementById('amount').addEventListener('input', () => {
-    console.log('Amount input changed');
-    updateUsdValue();
-});
+// Event listener untuk input jumlah
+const amountInput = checkElement('amount');
+if (amountInput) {
+    amountInput.addEventListener('input', () => {
+        console.log('Amount input changed');
+        updateUsdValue();
+    });
+}
 
+// Fungsi untuk memproses donasi
 window.makeDonation = async function() {
     console.log('makeDonation called');
-    const messageDiv = document.getElementById('donation-message');
+    const messageDiv = checkElement('donation-message');
+    const invoiceDiv = checkElement('invoice');
+    if (!messageDiv || !invoiceDiv) {
+        console.error('Donation message or invoice element not found');
+        return;
+    }
+
     messageDiv.textContent = '';
     messageDiv.classList.remove('error');
 
-    const amount = parseInt(document.getElementById('amount').value);
-    const message = document.getElementById('message').value || 'Donasi untuk situs web';
+    const amountInput = checkElement('amount');
+    const messageInput = checkElement('message');
+    if (!amountInput || !messageInput) {
+        messageDiv.textContent = 'Formulir tidak lengkap. Silakan coba lagi.';
+        messageDiv.classList.add('error');
+        return;
+    }
+
+    const amount = parseInt(amountInput.value);
+    const message = messageInput.value || 'Donasi untuk situs web';
 
     console.log('Amount:', amount, 'Message:', message);
 
@@ -53,7 +103,10 @@ window.makeDonation = async function() {
             console.log('WebLN detected, attempting to create invoice...');
             try {
                 await window.webln.enable();
-                const lightningAddress = document.querySelector('meta[name="lightning"]').content;
+                const lightningAddress = document.querySelector('meta[name="lightning"]')?.content;
+                if (!lightningAddress) {
+                    throw new Error('Lightning address not found in meta tag');
+                }
                 console.log('Lightning Address:', lightningAddress);
 
                 const invoice = await window.webln.makeInvoice({
@@ -62,8 +115,7 @@ window.makeDonation = async function() {
                 });
                 console.log('Invoice created:', invoice.paymentRequest);
 
-                // Tampilkan invoice di elemen #invoice
-                document.getElementById('invoice').textContent = invoice.paymentRequest;
+                invoiceDiv.textContent = invoice.paymentRequest;
 
                 console.log('Attempting to send payment via WebLN...');
                 await window.webln.sendPayment(invoice.paymentRequest);
@@ -71,7 +123,6 @@ window.makeDonation = async function() {
                 messageDiv.textContent = `Terima kasih atas donasi sebesar ${amount} satoshi!`;
                 messageDiv.classList.remove('error');
 
-                // Tambahkan efek confetti
                 confetti();
 
                 const donationTime = new Date().toLocaleString('id-ID', {
@@ -98,9 +149,9 @@ window.makeDonation = async function() {
             try {
                 const ln = new LightningAddress("evo@getalby.com");
                 await ln.fetch();
-                
+
                 const invoice = await ln.requestInvoice({ satoshi: amount });
-                document.getElementById('invoice').textContent = invoice.paymentRequest;
+                invoiceDiv.textContent = invoice.paymentRequest;
                 messageDiv.textContent = 'Waiting for payment via Alby...';
 
                 const provider = await requestProvider();
@@ -109,7 +160,6 @@ window.makeDonation = async function() {
                 messageDiv.textContent = `Terima kasih atas donasi sebesar ${amount} satoshi!`;
                 messageDiv.classList.remove('error');
 
-                // Tambahkan efek confetti
                 confetti();
 
                 const donationTime = new Date().toLocaleString('id-ID', {
@@ -138,9 +188,14 @@ window.makeDonation = async function() {
     }
 };
 
+// Fungsi untuk merender riwayat donasi
 function renderDonationHistory() {
     console.log('Rendering donation history:', donationHistory);
-    const historyBody = document.getElementById('history-body');
+    const historyBody = checkElement('history-body');
+    if (!historyBody) {
+        console.error('History body not found');
+        return;
+    }
     historyBody.innerHTML = '';
 
     donationHistory.forEach(donation => {
