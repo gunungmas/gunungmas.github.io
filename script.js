@@ -1,3 +1,7 @@
+import confetti from 'https://cdn.skypack.dev/canvas-confetti';
+import { requestProvider } from 'https://esm.sh/@getalby/bitcoin-connect@3.8.0';
+import { LightningAddress } from 'https://esm.sh/@getalby/lightning-tools@5.1.2';
+
 let donationHistory = JSON.parse(localStorage.getItem('donationHistory')) || [];
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -56,11 +60,17 @@ async function makeDonation() {
             });
             console.log('Invoice created:', invoice.paymentRequest);
 
+            // Tampilkan invoice di elemen #invoice
+            document.getElementById('invoice').textContent = invoice.paymentRequest;
+
             console.log('Attempting to send payment via WebLN...');
             await window.webln.sendPayment(invoice.paymentRequest);
 
             messageDiv.textContent = `Terima kasih atas donasi sebesar ${amount} satoshi!`;
             messageDiv.classList.remove('error');
+
+            // Tambahkan efek confetti
+            confetti();
 
             const donationTime = new Date().toLocaleString('id-ID', {
                 timeZone: 'Asia/Jakarta',
@@ -77,9 +87,38 @@ async function makeDonation() {
             localStorage.setItem('donationHistory', JSON.stringify(donationHistory));
             renderDonationHistory();
         } else {
-            console.log('WebLN not available');
-            messageDiv.textContent = 'Ekstensi Lightning (seperti Alby) tidak terdeteksi. Silakan instal ekstensi Alby untuk melanjutkan.';
-            messageDiv.classList.add('error');
+            console.log('WebLN not available, falling back to Alby...');
+            messageDiv.textContent = 'Generating invoice via Alby...';
+            const ln = new LightningAddress("evo@getalby.com");
+            await ln.fetch();
+            
+            const invoice = await ln.requestInvoice({ satoshi: amount });
+            document.getElementById('invoice').textContent = invoice.paymentRequest;
+            messageDiv.textContent = 'Waiting for payment via Alby...';
+
+            const provider = await requestProvider();
+            await provider.sendPayment(invoice.paymentRequest);
+
+            messageDiv.textContent = `Terima kasih atas donasi sebesar ${amount} satoshi!`;
+            messageDiv.classList.remove('error');
+
+            // Tambahkan efek confetti
+            confetti();
+
+            const donationTime = new Date().toLocaleString('id-ID', {
+                timeZone: 'Asia/Jakarta',
+                dateStyle: 'short',
+                timeStyle: 'short'
+            });
+            const donation = {
+                amount: amount,
+                time: donationTime,
+                message: message
+            };
+            console.log('Adding donation to history:', donation);
+            donationHistory.push(donation);
+            localStorage.setItem('donationHistory', JSON.stringify(donationHistory));
+            renderDonationHistory();
         }
     } catch (error) {
         console.error('Error processing donation:', error);
