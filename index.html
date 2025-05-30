@@ -8,6 +8,8 @@
     <title>Lightning Network Donation</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://www.unpkg.com/nostr-login@latest/dist/unpkg.js" async></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -35,7 +37,7 @@
                 <button type="button" class="donate-button" onclick="makeDonation()">⚡ Send Sats ⚡</button>
             </form>
             <div id="donation-message" class="donation-message"></div>
-            <p id="invoice"></p>
+            <div id="invoice"></div>
             <bc-button></bc-button>
         </div>
         <div class="history-section">
@@ -54,6 +56,6 @@
             </div>
         </div>
     </div>
-    <script type="module" src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
