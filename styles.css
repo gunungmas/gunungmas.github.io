@@ -1,4 +1,10 @@
-/* Reset default styles */
+/* Tambahan untuk QR code */
+#invoice canvas {
+    display: block;
+    margin: 10px auto;
+}
+
+/* Sisanya sama seperti styles.css sebelumnya */
 * {
     margin: 0;
     padding: 0;
@@ -207,7 +213,6 @@ textarea::placeholder {
     text-align: left;
 }
 
-/* Tambahan untuk elemen baru dari kode gabungan */
 #invoice {
     margin-top: 15px;
     font-size: 14px;
@@ -225,7 +230,6 @@ bc-button {
     margin-top: 10px;
 }
 
-/* Responsivitas */
 @media (max-width: 600px) {
     body {
         padding: 15px;
