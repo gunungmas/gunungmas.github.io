@@ -51,7 +51,7 @@ if (amountInput) {
 
 // Fungsi untuk memproses donasi
 async function makeDonation() {
-    console.log('makeDonation called');
+    console.log('makeDonation called at', new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' }));
     const messageDiv = document.getElementById('donation-message');
     const invoiceDiv = document.getElementById('invoice');
     const amountInput = document.getElementById('amount');
@@ -82,48 +82,77 @@ async function makeDonation() {
         return;
     }
 
-    try {
-        let invoice;
-        if (window.webln) {
-            console.log('WebLN detected, attempting to create invoice...');
-            await window.webln.enable();
-            const lightningAddress = document.querySelector('meta[name="lightning"]').content;
-            console.log('Lightning Address:', lightningAddress);
+    messageDiv.textContent = 'Memproses donasi...';
 
+    try {
+        if (!window.webln) {
+            console.error('WebLN not available');
+            messageDiv.textContent = 'Ekstensi Lightning (seperti Alby) tidak terdeteksi. Silakan instal dan aktifkan ekstensi Alby.';
+            messageDiv.classList.add('error');
+            return;
+        }
+
+        console.log('WebLN detected, enabling...');
+        try {
+            await window.webln.enable();
+            console.log('WebLN enabled successfully');
+        } catch (enableError) {
+            console.error('Failed to enable WebLN:', enableError);
+            messageDiv.textContent = 'Gagal mengaktifkan WebLN: ' + enableError.message + '. Pastikan Anda login ke Alby.';
+            messageDiv.classList.add('error');
+            return;
+        }
+
+        const lightningAddress = document.querySelector('meta[name="lightning"]').content;
+        if (!lightningAddress) {
+            console.error('Lightning address not found');
+            messageDiv.textContent = 'Kesalahan: Alamat Lightning tidak ditemukan.';
+            messageDiv.classList.add('error');
+            return;
+        }
+        console.log('Lightning Address:', lightningAddress);
+
+        console.log('Creating invoice for', amount, 'satoshi...');
+        let invoice;
+        try {
             invoice = await window.webln.makeInvoice({
                 amount: amount,
                 defaultMemo: message
             });
             console.log('Invoice created:', invoice.paymentRequest);
-
-            invoiceDiv.textContent = invoice.paymentRequest;
-
-            // Tambahkan QR code
-            const qrCanvas = document.createElement('canvas');
-            invoiceDiv.appendChild(qrCanvas);
-            QRCode.toCanvas(qrCanvas, invoice.paymentRequest, { width: 200 }, (error) => {
-                if (error) console.error('QR Code error:', error);
-            });
-
-            console.log('Attempting to send payment via WebLN...');
-            await window.webln.sendPayment(invoice.paymentRequest);
-        } else {
-            console.log('WebLN not available');
-            messageDiv.textContent = 'Ekstensi Lightning (seperti Alby) tidak terdeteksi. Silakan instal ekstensi Alby atau gunakan QR code.';
+        } catch (invoiceError) {
+            console.error('Failed to create invoice:', invoiceError);
+            messageDiv.textContent = 'Gagal membuat invoice: ' + invoiceError.message;
             messageDiv.classList.add('error');
+            return;
+        }
 
-            // Fallback: Generate invoice manually (simulasi, karena Alby memerlukan modul)
-            invoice = { paymentRequest: `lnbc${amount}...` }; // Ganti dengan logika nyata jika memungkinkan
-            invoiceDiv.textContent = invoice.paymentRequest;
+        // Tampilkan invoice
+        invoiceDiv.textContent = invoice.paymentRequest;
 
-            // Tambahkan QR code
-            const qrCanvas = document.createElement('canvas');
-            invoiceDiv.appendChild(qrCanvas);
+        // Tambahkan QR code
+        const qrCanvas = document.createElement('canvas');
+        invoiceDiv.appendChild(qrCanvas);
+        try {
             QRCode.toCanvas(qrCanvas, invoice.paymentRequest, { width: 200 }, (error) => {
                 if (error) console.error('QR Code error:', error);
+                else console.log('QR code generated successfully');
             });
+        } catch (qrError) {
+            console.error('Failed to generate QR code:', qrError);
+            invoiceDiv.textContent += '\n(Gagal membuat QR code)';
+        }
 
-            // Berhenti di sini karena tidak ada pembayaran otomatis tanpa Alby
+        messageDiv.textContent = 'Mengirim pembayaran...';
+        console.log('Attempting to send payment via WebLN...');
+
+        try {
+            const paymentResult = await window.webln.sendPayment(invoice.paymentRequest);
+            console.log('Payment sent successfully:', paymentResult);
+        } catch (paymentError) {
+            console.error('Failed to send payment:', paymentError);
+            messageDiv.textContent = 'Gagal mengirim pembayaran: ' + paymentError.message + '. Saldo mungkin tidak cukup atau ada masalah jaringan.';
+            messageDiv.classList.add('error');
             return;
         }
 
@@ -131,7 +160,12 @@ async function makeDonation() {
         messageDiv.classList.remove('error');
 
         // Tambahkan efek confetti
-        confetti();
+        try {
+            confetti();
+            console.log('Confetti effect triggered');
+        } catch (confettiError) {
+            console.error('Failed to trigger confetti:', confettiError);
+        }
 
         const donationTime = new Date().toLocaleString('id-ID', {
             timeZone: 'Asia/Jakarta',
@@ -145,11 +179,17 @@ async function makeDonation() {
         };
         console.log('Adding donation to history:', donation);
         donationHistory.push(donation);
-        localStorage.setItem('donationHistory', JSON.stringify(donationHistory));
+        try {
+            localStorage.setItem('donationHistory', JSON.stringify(donationHistory));
+            console.log('Donation history saved to localStorage');
+        } catch (storageError) {
+            console.error('Failed to save donation history:', storageError);
+        }
         renderDonationHistory();
+
     } catch (error) {
-        console.error('Error processing donation:', error);
-        messageDiv.textContent = 'Gagal memproses donasi: ' + error.message + '. Pastikan dompet Lightning aktif.';
+        console.error('Unexpected error processing donation:', error);
+        messageDiv.textContent = 'Kesalahan tak terduga: ' + error.message + '. Silakan coba lagi.';
         messageDiv.classList.add('error');
     }
 }
