@@ -5,11 +5,122 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <meta name="theme-color" content="#f7931a">
     <meta name="lightning" content="evo@getalby.com">
-    <title>Lightning Network Donation</title>
+    <title>Lightning Network</title>
     <link rel="stylesheet" href="styles.css">
-    <script src="https://www.unpkg.com/nostr-login@latest/dist/unpkg.js" async></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <script type="module">
+        import { requestProvider } from 'https://esm.sh/@getalby/bitcoin-connect@3.8.0';
+        import { LightningAddress } from 'https://esm.sh/@getalby/lightning-tools@5.1.2';
+
+        // Konversi satoshi ke USD (gunakan nilai tukar aktual atau API untuk akurasi)
+        const SAT_TO_USD = 0.0001; // Contoh: 1 sat = $0.0001 (sesuaikan dengan harga BTC aktual)
+
+        // Fungsi untuk mengatur jumlah donasi
+        window.setAmount = function(sats) {
+            const amountInput = document.getElementById('amount');
+            amountInput.value = sats;
+            updateUSDValue(sats);
+        };
+
+        // Fungsi untuk memperbarui nilai USD
+        function updateUSDValue(sats) {
+            const usdValue = (sats * SAT_TO_USD).toFixed(2);
+            document.querySelector('.usd-value').textContent = `$${usdValue}`;
+        }
+
+        // Fungsi untuk menangani donasi
+        window.makeDonation = async function() {
+            const amount = parseInt(document.getElementById('amount').value);
+            const message = document.getElementById('message').value;
+            const donationMessage = document.getElementById('donation-message');
+            const invoiceDiv = document.getElementById('invoice');
+
+            // Validasi jumlah donasi
+            if (amount < 1 || amount > 50000) {
+                donationMessage.textContent = 'Please enter an amount between 1 and 50,000 sats.';
+                donationMessage.style.color = 'red';
+                return;
+            }
+
+            try {
+                donationMessage.textContent = 'Generating invoice...';
+                donationMessage.style.color = 'black';
+
+                // Inisialisasi Lightning Address
+                const ln = new LightningAddress("evo@getalby.com");
+                await ln.fetch();
+
+                // Request invoice
+                const invoice = await ln.requestInvoice({ satoshi: amount });
+                donationMessage.textContent = 'Invoice generated! Waiting for payment...';
+
+                // Tampilkan QR code untuk invoice
+                invoiceDiv.innerHTML = '';
+                const qrCanvas = document.createElement('canvas');
+                invoiceDiv.appendChild(qrCanvas);
+                QRCode.toCanvas(qrCanvas, invoice.paymentRequest, { width: 200 }, (error) => {
+                    if (error) console.error('Error generating QR code:', error);
+                });
+
+                // Tambahkan tombol pembayaran
+                const payButton = document.createElement('button');
+                payButton.textContent = 'Pay with Bitcoin Connect';
+                payButton.className = 'pay-button';
+                invoiceDiv.appendChild(payButton);
+
+                // Event listener untuk pembayaran
+                payButton.addEventListener('click', async () => {
+                    try {
+                        const provider = await requestProvider();
+                        await provider.sendPayment(invoice.paymentRequest);
+                        donationMessage.textContent = 'Payment successful!';
+                        donationMessage.style.color = 'green';
+
+                        // Animasi confetti
+                        confetti();
+
+                        // Tambahkan ke riwayat donasi
+                        addToHistory(amount, message);
+
+                        // Reset form
+                        document.getElementById('donation-form').reset();
+                        setAmount(100); // Reset ke nilai default
+                        invoiceDiv.innerHTML = '';
+                    } catch (error) {
+                        donationMessage.textContent = 'Payment failed: ' + error.message;
+                        donationMessage.style.color = 'red';
+                    }
+                });
+            } catch (error) {
+                donationMessage.textContent = 'Error generating invoice: ' + error.message;
+                donationMessage.style.color = 'red';
+            }
+        };
+
+        // Fungsi untuk menambahkan donasi ke riwayat
+        function addToHistory(amount, message) {
+            const historyBody = document.getElementById('history-body');
+            const row = document.createElement('tr');
+            const time = new Date().toLocaleString();
+            row.innerHTML = `
+                <td>${amount}</td>
+                <td>${time}</td>
+                <td>${message || '-'}</td>
+            `;
+            historyBody.prepend(row); // Tambahkan di atas riwayat
+        }
+
+        // Event listener untuk memperbarui nilai USD saat input berubah
+        document.addEventListener('DOMContentLoaded', () => {
+            const amountInput = document.getElementById('amount');
+            amountInput.addEventListener('input', () => {
+                const sats = parseInt(amountInput.value) || 0;
+                updateUSDValue(sats);
+            });
+            setAmount(100); // Set nilai default saat halaman dimuat
+        });
+    </script>
 </head>
 <body>
     <div class="container">
@@ -55,6 +166,109 @@
             </div>
         </div>
     </div>
-    <script src="script.js"></script>
+    <style>
+        /* CSS untuk mempercantik tampilan */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .donation-section, .history-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .section-title {
+            margin-top: 0;
+            color: #333;
+        }
+        .donation-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .amount-input-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        input[type="number"], textarea {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .amount-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        .amount-buttons button {
+            padding: 8px 12px;
+            border: none;
+            background: #f7931a;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .amount-buttons button:hover {
+            background: #e0861a;
+        }
+        .range-info {
+            font-size: 0.9em;
+            color: #666;
+            margin: 5px 0;
+        }
+        .donate-button, .pay-button {
+            padding: 10px;
+            background: #f7931a;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1.1em;
+        }
+        .donate-button:hover, .pay-button:hover {
+            background: #e0861a;
+        }
+        .donation-message {
+            margin-top: 10px;
+            font-size: 1em;
+        }
+        .table-container {
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background: #f7931a;
+            color: white;
+        }
+        #invoice {
+            margin-top: 20px;
+            text-align: center;
+        }
+    </style>
 </body>
 </html>
