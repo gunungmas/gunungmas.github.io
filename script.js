@@ -10,26 +10,27 @@ document.addEventListener('DOMContentLoaded', () => {
     updateUsdValue();
 });
 
-function setAmount(value) {
+// Pastikan fungsi tersedia untuk event handler HTML
+window.setAmount = function(value) {
     console.log('Setting amount to:', value);
     const amountInput = document.getElementById('amount');
     amountInput.value = value;
     updateUsdValue();
-}
+};
 
-function updateUsdValue() {
+window.updateUsdValue = function() {
     console.log('Updating USD value...');
     const amount = parseInt(document.getElementById('amount').value) || 0;
     const usdValue = (amount * 0.0001).toFixed(2);
     document.querySelector('.usd-value').textContent = `$${usdValue}`;
-}
+};
 
 document.getElementById('amount').addEventListener('input', () => {
     console.log('Amount input changed');
     updateUsdValue();
 });
 
-async function makeDonation() {
+window.makeDonation = async function() {
     console.log('makeDonation called');
     const messageDiv = document.getElementById('donation-message');
     messageDiv.textContent = '';
@@ -50,82 +51,92 @@ async function makeDonation() {
     try {
         if (window.webln) {
             console.log('WebLN detected, attempting to create invoice...');
-            await window.webln.enable();
-            const lightningAddress = document.querySelector('meta[name="lightning"]').content;
-            console.log('Lightning Address:', lightningAddress);
+            try {
+                await window.webln.enable();
+                const lightningAddress = document.querySelector('meta[name="lightning"]').content;
+                console.log('Lightning Address:', lightningAddress);
 
-            const invoice = await window.webln.makeInvoice({
-                amount: amount,
-                defaultMemo: message
-            });
-            console.log('Invoice created:', invoice.paymentRequest);
+                const invoice = await window.webln.makeInvoice({
+                    amount: amount,
+                    defaultMemo: message
+                });
+                console.log('Invoice created:', invoice.paymentRequest);
 
-            // Tampilkan invoice di elemen #invoice
-            document.getElementById('invoice').textContent = invoice.paymentRequest;
+                // Tampilkan invoice di elemen #invoice
+                document.getElementById('invoice').textContent = invoice.paymentRequest;
 
-            console.log('Attempting to send payment via WebLN...');
-            await window.webln.sendPayment(invoice.paymentRequest);
+                console.log('Attempting to send payment via WebLN...');
+                await window.webln.sendPayment(invoice.paymentRequest);
 
-            messageDiv.textContent = `Terima kasih atas donasi sebesar ${amount} satoshi!`;
-            messageDiv.classList.remove('error');
+                messageDiv.textContent = `Terima kasih atas donasi sebesar ${amount} satoshi!`;
+                messageDiv.classList.remove('error');
 
-            // Tambahkan efek confetti
-            confetti();
+                // Tambahkan efek confetti
+                confetti();
 
-            const donationTime = new Date().toLocaleString('id-ID', {
-                timeZone: 'Asia/Jakarta',
-                dateStyle: 'short',
-                timeStyle: 'short'
-            });
-            const donation = {
-                amount: amount,
-                time: donationTime,
-                message: message
-            };
-            console.log('Adding donation to history:', donation);
-            donationHistory.push(donation);
-            localStorage.setItem('donationHistory', JSON.stringify(donationHistory));
-            renderDonationHistory();
+                const donationTime = new Date().toLocaleString('id-ID', {
+                    timeZone: 'Asia/Jakarta',
+                    dateStyle: 'short',
+                    timeStyle: 'short'
+                });
+                const donation = {
+                    amount: amount,
+                    time: donationTime,
+                    message: message
+                };
+                console.log('Adding donation to history:', donation);
+                donationHistory.push(donation);
+                localStorage.setItem('donationHistory', JSON.stringify(donationHistory));
+                renderDonationHistory();
+            } catch (weblnError) {
+                console.error('WebLN error:', weblnError);
+                throw new Error('Gagal menggunakan WebLN: ' + weblnError.message);
+            }
         } else {
             console.log('WebLN not available, falling back to Alby...');
             messageDiv.textContent = 'Generating invoice via Alby...';
-            const ln = new LightningAddress("evo@getalby.com");
-            await ln.fetch();
-            
-            const invoice = await ln.requestInvoice({ satoshi: amount });
-            document.getElementById('invoice').textContent = invoice.paymentRequest;
-            messageDiv.textContent = 'Waiting for payment via Alby...';
+            try {
+                const ln = new LightningAddress("evo@getalby.com");
+                await ln.fetch();
+                
+                const invoice = await ln.requestInvoice({ satoshi: amount });
+                document.getElementById('invoice').textContent = invoice.paymentRequest;
+                messageDiv.textContent = 'Waiting for payment via Alby...';
 
-            const provider = await requestProvider();
-            await provider.sendPayment(invoice.paymentRequest);
+                const provider = await requestProvider();
+                await provider.sendPayment(invoice.paymentRequest);
 
-            messageDiv.textContent = `Terima kasih atas donasi sebesar ${amount} satoshi!`;
-            messageDiv.classList.remove('error');
+                messageDiv.textContent = `Terima kasih atas donasi sebesar ${amount} satoshi!`;
+                messageDiv.classList.remove('error');
 
-            // Tambahkan efek confetti
-            confetti();
+                // Tambahkan efek confetti
+                confetti();
 
-            const donationTime = new Date().toLocaleString('id-ID', {
-                timeZone: 'Asia/Jakarta',
-                dateStyle: 'short',
-                timeStyle: 'short'
-            });
-            const donation = {
-                amount: amount,
-                time: donationTime,
-                message: message
-            };
-            console.log('Adding donation to history:', donation);
-            donationHistory.push(donation);
-            localStorage.setItem('donationHistory', JSON.stringify(donationHistory));
-            renderDonationHistory();
+                const donationTime = new Date().toLocaleString('id-ID', {
+                    timeZone: 'Asia/Jakarta',
+                    dateStyle: 'short',
+                    timeStyle: 'short'
+                });
+                const donation = {
+                    amount: amount,
+                    time: donationTime,
+                    message: message
+                };
+                console.log('Adding donation to history:', donation);
+                donationHistory.push(donation);
+                localStorage.setItem('donationHistory', JSON.stringify(donationHistory));
+                renderDonationHistory();
+            } catch (albyError) {
+                console.error('Alby error:', albyError);
+                throw new Error('Gagal menggunakan Alby: ' + albyError.message);
+            }
         }
     } catch (error) {
         console.error('Error processing donation:', error);
         messageDiv.textContent = 'Gagal memproses donasi: ' + error.message + '. Pastikan dompet Lightning aktif.';
         messageDiv.classList.add('error');
     }
-}
+};
 
 function renderDonationHistory() {
     console.log('Rendering donation history:', donationHistory);
