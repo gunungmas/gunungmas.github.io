@@ -58,7 +58,7 @@
     <script src="script.js"></script>
     <body>
   <script type="module">
-  import confetti from 'https://cdn.skypack.dev/canvas-confetti';
+  import confetti from 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js';
   import {requestProvider} from 'https://esm.sh/@getalby/bitcoin-connect@3.8.0'; // jsdelivr.net, skypack.dev also work
   import { LightningAddress } from "https://esm.sh/@getalby/lightning-tools@5.1.2"; // jsdelivr.net, skypack.dev also work
 
@@ -86,7 +86,7 @@
       
     })();
   </script>
-  <h1>Invoice + Bitcoin Connect!</h1>
+  <h1>Bitcoin Connect!</h1>
   <p id="invoice"></p>
   <bc-button></bc-button>
   <br/>
