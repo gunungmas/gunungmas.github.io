@@ -10,62 +10,6 @@
     <script src="https://www.unpkg.com/nostr-login@latest/dist/unpkg.js" async></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
-    <script type="module">
-        import confetti from 'https://cdn.skypack.dev/canvas-confetti';
-        import { requestProvider } from 'https://esm.sh/@getalby/bitcoin-connect@3.8.0';
-        import { LightningAddress } from 'https://esm.sh/@getalby/lightning-tools@5.1.2';
-
-        // Fungsi untuk mengatur jumlah donasi
-        window.setAmount = function(sats) {
-            const amountInput = document.getElementById('amount');
-            amountInput.value = sats;
-            // Catatan: Tidak ada konversi USD di kode asli
-        };
-
-        // Fungsi untuk menangani donasi
-        window.makeDonation = async function() {
-            const amount = parseInt(document.getElementById('amount').value);
-            const message = document.getElementById('message').value;
-            const donationMessage = document.getElementById('donation-message');
-            const invoiceDiv = document.getElementById('invoice');
-            const invoiceText = document.getElementById('invoice-text');
-
-            try {
-                donationMessage.textContent = 'Generating invoice...';
-                const ln = new LightningAddress("evo@getalby.com");
-                await ln.fetch();
-                const invoice = await ln.requestInvoice({ satoshi: amount });
-                donationMessage.textContent = 'Invoice generated! Waiting for payment...';
-
-                // Tampilkan QR code
-                invoiceDiv.innerHTML = ''; // Kosongkan div invoice
-                const qrCanvas = document.createElement('canvas');
-                invoiceDiv.appendChild(qrCanvas);
-                QRCode.toCanvas(qrCanvas, invoice.paymentRequest, { width: 200 }, (error) => {
-                    if (error) console.error('Error generating QR code:', error);
-                });
-
-                // Tampilkan invoice di <p id="invoice-text">
-                invoiceText.textContent = invoice.paymentRequest;
-
-                // Aktifkan tombol Pay
-                const payButton = document.getElementById('pay');
-                payButton.style.display = 'block'; // Tampilkan tombol
-                payButton.onclick = async () => {
-                    try {
-                        const provider = await requestProvider();
-                        await provider.sendPayment(invoice.paymentRequest);
-                        donationMessage.textContent = 'PAID!';
-                        confetti();
-                    } catch (error) {
-                        donationMessage.textContent = 'Payment failed: ' + error.message;
-                    }
-                };
-            } catch (error) {
-                donationMessage.textContent = 'Error generating invoice: ' + error.message;
-            }
-        };
-    </script>
 </head>
 <body>
     <div class="container">
@@ -95,7 +39,7 @@
             <div id="donation-message" class="donation-message"></div>
             <div id="invoice">
                 <h1>Invoice + Bitcoin Connect!</h1>
-                <p id="invoice-text"></p> <!-- Mengubah id untuk menghindari konflik -->
+                <p id="invoice-text"></p>
                 <bc-button></bc-button>
                 <br/>
                 <button id="pay" style="display: none;">Pay invoice</button>
@@ -118,6 +62,6 @@
             </div>
         </div>
     </div>
-    <script src="script.js"></script>
+    <script type="module" src="script.js"></script>
 </body>
 </html>
