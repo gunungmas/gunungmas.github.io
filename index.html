@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <meta name="theme-color" content="#FF4F00">
+    <meta name="theme-color" content="#f7931a">
     <meta name="lightning" content="evo@getalby.com">
     <title>Lightning Network Donation</title>
     <link rel="stylesheet" href="styles.css">
@@ -54,81 +54,6 @@
             </div>
         </div>
     </div>
-
-    <script type="module">
-        import confetti from 'https://cdn.skypack.dev/canvas-confetti';
-        import { requestProvider } from 'https://esm.sh/@getalby/bitcoin-connect@3.8.0';
-        import { LightningAddress } from 'https://esm.sh/@getalby/lightning-tools@5.1.2';
-
-        // Fungsi untuk mengatur jumlah donasi
-        window.setAmount = function(amount) {
-            document.getElementById('amount').value = amount;
-            updateUSDValue(amount);
-        };
-
-        // Fungsi untuk mengonversi satoshi ke USD (contoh sederhana, gunakan API nyata untuk harga aktual)
-        function updateUSDValue(satoshi) {
-            const btcPrice = 0.000001; // Contoh: 1 satoshi = $0.000001 (sesuaikan dengan harga BTC aktual)
-            const usdValue = (satoshi * btcPrice).toFixed(2);
-            document.querySelector('.usd-value').textContent = `$${usdValue}`;
-        }
-
-        // Fungsi untuk memproses donasi
-        window.makeDonation = async function() {
-            const amount = parseInt(document.getElementById('amount').value);
-            const message = document.getElementById('message').value;
-            const donationMessage = document.getElementById('donation-message');
-
-            if (amount < 1 || amount > 50000) {
-                donationMessage.textContent = 'Amount must be between 1 and 50,000 satoshi.';
-                return;
-            }
-
-            donationMessage.textContent = 'Generating invoice...';
-            
-            try {
-                const ln = new LightningAddress("evo@getalby.com");
-                await ln.fetch();
-                
-                const invoice = await ln.requestInvoice({ satoshi: amount });
-                document.getElementById('invoice').textContent = invoice.paymentRequest;
-                donationMessage.textContent = 'Waiting for payment...';
-
-                const provider = await requestProvider();
-                await provider.sendPayment(invoice.paymentRequest);
-                
-                donationMessage.textContent = 'PAID!';
-                confetti();
-
-                // Tambahkan ke riwayat donasi
-                addToHistory(amount, message);
-            } catch (error) {
-                console.error('Error processing payment:', error);
-                donationMessage.textContent = 'Payment failed. Please try again.';
-            }
-        };
-
-        // Fungsi untuk menambahkan donasi ke riwayat
-        function addToHistory(amount, message) {
-            const historyBody = document.getElementById('history-body');
-            const timestamp = new Date().toLocaleString();
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${amount}</td>
-                <td>${timestamp}</td>
-                <td>${message || '-'}</td>
-            `;
-            historyBody.prepend(row);
-        }
-
-        // Update nilai USD saat halaman dimuat
-        document.getElementById('amount').addEventListener('input', () => {
-            const amount = parseInt(document.getElementById('amount').value);
-            updateUSDValue(amount);
-        });
-
-        // Inisialisasi nilai USD awal
-        updateUSDValue(100);
-    </script>
+    <script type="module" src="script.js"></script>
 </body>
 </html>
