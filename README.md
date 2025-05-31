@@ -14,10 +14,10 @@ https://github.com/sapibot/sapibot.github.io
 
 ## Riwayat Pembelian Bitcoin Perusahaan Puncak Lembah
 
-| Tanggal           | Hari       | Nominal Pembelian (Rp) | Jumlah Bitcoin (BTC) | Harga per BTC (Rp)    |
-|-------------------|------------|------------------------|----------------------|-----------------------|
-| 30 Mei 2025       | Jumat      | 100.000                | 0.00005538           | 1.805,706,391         |
-| ~~31 Mei 2025~~   | ~~Sabtu~~  | ~~77.000~~             | ~~0.00004000~~       | ~~1.925,000,000~~     |
+| Tanggal           | Hari       | Nominal Pembelian (Rp) | Jumlah Bitcoin (BTC) | Harga per BTC (Rp)    | Harga per BTC ($) |
+|-------------------|------------|------------------------|----------------------|-----------------------|-------------------|
+| 30 Mei 2025       | Jumat      | 100.000                | 0.00005538           | 1.805,706,391         | ~~106,000~~       |
+| ~~31 Mei 2025~~   | ~~Sabtu~~  | ~~77.000~~             | ~~0.00004000~~       | ~~1.925,000,000~~     | ~~105,000~~       |
 
 **Catatan**:  
 - Harga per BTC dihitung dengan membagi Nominal Pembelian dengan Jumlah Bitcoin.  
