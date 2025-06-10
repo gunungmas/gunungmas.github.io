@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jurnal Peracikan</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 20px;
+        }
+        .bonus-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .bonus-30 {
+            background: linear-gradient(135deg, #b79b7e, #8a6d4c);
+            color: white;
+        }
+        .club-bonus {
+            background: linear-gradient(135deg, #8ea7b9, #6b8ea0);
+            color: white;
+        }
+        .bonus-info {
+            flex: 1;
+        }
+        .bonus-info h2 {
+            margin: 0 0 10px 0;
+            font-size: 2em;
+        }
+        .bonus-info p {
+            margin: 5px 0;
+        }
+        .bonus-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .bonus-actions button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        .bonus-actions .get-bonus {
+            background-color: #d32f2f;
+            color: white;
+        }
+        .bonus-actions .more-details {
+            background-color: transparent;
+            color: white;
+            border: 1px solid white;
+        }
+        .online-course {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            width: 200px;
+        }
+        .online-course img {
+            width: 100%;
+            height: auto;
+        }
+        .online-course button {
+            background-color: #d32f2f;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="bonus-section bonus-30">
+            <div class="bonus-info">
+                <h2>Target Peracikan Perhari 10%</h2>
+                <p>Bonus size: 30%</p>
+                <p>Accrual: every deposit</p>
+                <p>Maximum leverage: 1:1000</p>
+                <p>Stop out: 10%</p>
+            </div>
+            <div class="bonus-actions">
+                <button class="get-bonus">Get bonus</button>
+                <button class="more-details">More details</button>
+            </div>
+        </div>
+        <div class="bonus-section club-bonus">
+            <div class="bonus-info">
+                <h2>Club Bonus</h2>
+                <p>Bonus size: up to 40%</p>
+                <p>Accrual: every deposit</p>
+                <p>Maximum leverage: 1:1000</p>
+                <p>Stop out: 10%</p>
+            </div>
+            <div class="bonus-actions">
+                <button class="get-bonus">Get bonus</button>
+                <button class="more-details">More details</button>
+            </div>
+        </div>
+        <div class="online-course">
+            <img src="https://via.placeholder.com/150" alt="Online Course">
+            <p>Online courses<br>Pro-Start</p>
+            <button>Learn more</button>
+        </div>
+    </div>
+</body>
+</html>
