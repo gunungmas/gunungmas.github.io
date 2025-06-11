@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monthly Sales Chart</title>
+    <style>
+        data-chart {
+            --data-chart-bar-bdrs: clamp(0.125rem, -0.35rem + 1cqi, 0.33rem);
+            --data-chart-bar-c: currentColor;
+            --data-chart-bdw: 1px;
+            --data-chart-bds: solid;
+            --data-chart-bdc: light-dark(#CCC, #666);
+            --data-chart-nolabel-bdw: 1px;
+            --data-chart-nolabel-bds: solid;
+            --data-chart-nolabel-bdc: light-dark(#EBEBEB, #444);
+            --data-chart-caption-h: 1.5rem;
+            --data-chart-label-h: 20px;
+            --data-chart-label-w: 5rem;
+            --data-chart-mih: 275px;
+            --data-chart-y-axis-w: 3rem;
+
+            --_min: attr(min type(<number>), 0);
+            --_max: attr(max type(<number>), 100);
+
+            --_xs: attr(items-xs type(<number>), 0);
+            --_sm: attr(items-sm type(<number>), 0);
+            --_md: attr(items-md type(<number>), 0);
+            --_lg: attr(items-lg type(<number>), 0);
+            --_xl: attr(items-xl type(<number>), 0);
+
+            --c1: hsla(210, 60%, 60%, .75);
+            --c2: hsla(170, 45%, 55%, .75);
+            --c3: hsla(100, 40%, 55%, .75);
+            --c4: hsla(60, 40%, 60%, .75);
+            --c5: hsla(35, 50%, 65%, .75);
+            --c6: hsla(15, 55%, 60%, .75);
+            --c7: hsla(350, 50%, 60%, .75);
+            --c8: hsla(280, 40%, 60%, .75);
+            --c9: hsla(240, 45%, 55%, .75);
+            --c10: hsla(200, 30%, 65%, .75);
+
+            background: var(--data-chart-bg, #FFF0);
+            border-radius: var(--data-chart-bdrs, .5rem);
+            box-sizing: border-box;
+            container-type: inline-size;
+            display: block;
+            font-family: var(--data-chart-ff, ui-sans-serif, system-ui);
+            padding: var(--data-chart-p, 0);
+        }
+
+        data-chart * { box-sizing: border-box; }
+
+        data-chart caption {
+            display: none;
+            font-size: var(--data-chart-caption-fs, 11px);
+            font-weight: var(--data-chart-caption-fw, 500);
+            grid-area: 1 / 1 / 2 / 2;
+            text-wrap: nowrap;
+        }
+
+        data-chart table {
+            display: grid;
+            grid-template-rows: var(--_gtr, var(--data-chart-caption-h) 1fr);
+            min-height: var(--data-chart-mih);
+        }
+
+        data-chart tbody {
+            container-type: size;
+            display: grid;
+            gap: var(--data-chart-bar-gap, .25rem);
+            grid-area: 2 / 1 / 4 / 2;
+            grid-template-columns: repeat(auto-fit, minmax(var(--data-chart-bar-miw, 1.25cqi), 1fr));
+        }
+
+        data-chart tbody td {
+            --_v: attr(data-v type(<number>), 0);
+            --_pv: attr(data-pv type(<number>), var(--_v));
+            --_y: calc(1 - ((var(--_v) - var(--_min)) / (var(--_max) - var(--_min))));
+            --_py: calc(1 - ((var(--_pv) - var(--_min)) / (var(--_max) - var(--_min))));
+
+            background: var(--data-chart-bar-bg, var(--_bg, light-dark(hsla(210, 100%, 70%, .8), hsla(210, 60%, 60%, .8))));
+            color: #0000;
+            font-size: var(--data-chart-bar-fs, clamp(0.5625rem, 0.45rem + .5cqi, 0.75rem));
+            font-weight: var(--data-chart-bar-fw, 400);
+            height: calc(((var(--_v) - var(--_min)) / (var(--_max) - var(--_min))) * 100cqb);
+            padding: var(--data-chart-bar-p, .75ch);
+            text-align: center;
+        }
+
+        data-chart tbody td:first-of-type {
+            border-radius: var(--data-chart-bar-bdrs) var(--data-chart-bar-bdrs) 0 0;
+        }
+
+        data-chart tbody th {
+            border-block-start: var(--data-chart-x-axis-bdw, 0px) var(--data-chart-x-axis-bds, solid) var(--data-chart-x-axis-bdc, hsla(0, 0%, 41%, .95));
+            color: var(--data-chart-x-axis-c, light-dark(#444, #EEE));
+            display: none;
+            font-size: var(--data-chart-x-axis-fs, clamp(0.5625rem, 0.4rem + .5cqi, 0.25rem));
+            font-weight: var(--data-chart-x-axis-fw, 400);
+            grid-row: calc(var(--_c, 1) + 1);
+            height: var(--data-chart-label-h);
+            overflow-inline: clip;
+            padding: var(--data-chart-x-axis-p, 0);
+            place-content: center;
+        }
+
+        data-chart tbody tr {
+            align-content: end;
+            align-items: end;
+            display: grid;
+            overflow-inline: clip;
+        }
+
+        data-chart thead {
+            align-items: end;
+            color: #0000;
+            display: none;
+            grid-area: 1 / 1 / 3 / 2;
+            grid-template-rows: var(--data-chart-caption-h) repeat(auto-fit, minmax(1rem, 1fr));
+        }
+
+        data-chart thead th {
+            font-size: var(--data-chart-y-axis-fs, 10px);
+            font-weight: var(--data-chart-y-axis-fw, 300);
+            text-align: start;
+        }
+
+        data-chart thead tr {
+            display: contents;
+        }
+
+        data-chart[options*="caption"] caption {
+            display: block;
+        }
+
+        data-chart[options*="value-labels"] td {
+            color: var(--data-chart-bar-c);
+        }
+
+        data-chart[options*="x-labels"] {
+            --_gtr: var(--data-chart-caption-h) 1fr var(--data-chart-label-h);
+            td { height: calc(((var(--_v) - var(--_min)) / (var(--_max) - var(--_min))) * 100cqb - var(--data-chart-label-h)); }
+            th { display: inline-grid; }
+        }
+
+        data-chart[options*="y-labels"] {
+            tbody { padding-inline: var(--data-chart-y-axis-w) 0; }
+            thead { color: var(--data-chart-y-axis-c, light-dark(#696969, #EEE)); display: grid; }
+        }
+
+        data-chart[options~="y-labels-end"] {
+            tbody { padding-inline: 0 var(--data-t-chart-y-axis-w); }
+            thead th { text-align: end; }
+        }
+
+        data-chart[options~="groups"] tbody tr:nth-of-type(10n+1) td { --_bg: var(--c1); }
+        data-chart tr:nth-of-type(10n+2) td { --_bg: var(--c2); }
+        data-chart tr:nth-of-type(10n+3) td { --_3bg: var(--c3); }
+        data-chart tr:nth-of-type(10n+4) td { --_4bg: var(--c4); }
+        data-chart tr:nth-of-type(10n+5) td { --_bg: var(--c5); }
+        data-chart tr:nth-of-type(10n+6) td { --_bg: var(--c6); }
+        data-chart tr:nth-of-type(10n+7) td { --_bg: var(--c7); }
+        data-chart tr:nth-of-type(10n+8) td { --_bg: var(--c8); }
+        data-chart tr:nth-of-type(10n+9) td { --_bg: var(--c9); }
+        data-chart tr:nth-of-type(10n+0) td { --_10bg: var(--c10); }
+    }
+
+        @container (max-width: 480px) and (max-width: 768px) {
+            data-chart:is([type="area"], [type="column"], [type="line"]) {
+                &[items-sm="7"] tbody tr:nth-of-type(n+8) { display: none; }
+            }
+        }
+
+        @container (max-width: 400px) {
+            data-chart:is([type="area"], [type="column"], [type="line"]) {
+                &[items-xs="4"] tbody tr:nth-of-type(n+5) { display: none; }
+            }
+        }
+
+        body {
+            display: grid;
+            font-family: system-ui, sans-serif;
+            margin-inline: auto;
+            max-width: 1000px;
+            padding: 1ch;
+            row-gap: 3ch;
+        }
+
+        h2 {
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <h2>Monthly Sales Performance</h2>
+    <data-chart
+        aria-label="Annual Revenue Growth"
+        id="chart-one"
+        items-sm="7"
+        items-xs="4"
+        max="50000"
+        min="0"
+        options="caption x-labels value-labels y-grid y-labels"
+        role="figure"
+        type="column">
+        <table>
+            <caption>Monthly Sales Figures ($)</caption>
+            <thead aria-hidden="true">
+                <tr><th colspan="2">50000</th></tr>
+                <tr><th colspan="row"></th></tr>
+                <tr><th colspan="2">40000</th></tr>
+                <tr><th colspan="2"></th></tr>
+                <tr><th colspan="2">30000</th></tr>
+                <tr><th colspan="2"></th></tr>
+                <tr><th colspan="2">20000</th></tr>
+                <tr><th colspan="2"></th></tr>
+                <tr><th colspan="2">10000</th></tr>
+                <tr><th colspan="2"></th></tr>
+                <tr><th colspan="2">0</th></tr>
+            </thead>
+            <tbody data-t="456200">
+                <tr><th scope="row">January</th><td data-v="28500" data-pv="28500" data-av="0">$28,500</td></tr>
+                <tr><th scope="row">February</th><td data-v="22300" data-pv="28500" data-av="28500">$22,300</td></tr>
+                <tr><th scope="row">March</th><td data-v="30100" data-pv="22300" data-av="50800">$30,100</td></tr>
+                <tr><tr><th scope="row">April</th><td data-v="35800" data-pv="30100" data-av="80900">$35,800</td></tr>
+<td>
+                <tr><th scope="row">May</th><td data-v="42000" data-pv="35800" data-av="116700">$42,000</td></tr>
+                <tr><th scope="row">June</th><td data-v="45300" data-pv="42000" data-av="158700">$45,300</td></tr>
+<td></tr>
+                <tr><th scope="row">July</th><td data-v="48900" data-pv="45300" data-av="204000">$48,900</td></tr>
+<td></tr>
+                <tr><tr><th scope="row">August</th><td data-v="47200" data-pv="48900" data-av="252900">$47,200</td></tr>
+<td>
+                <tr><tr><th scope="row">September</th><td data-v="43500" data-pv="47200" data-av="300100">$43,500</td></tr>
+<td></td>
+                <tr><th scope="row">October</th><td data-v="38700" data-pv="43500" data-av="343600">$38,700</td></tr>
+<td></tr>
+                <tr><th scope="row">November</th><td data-v="32400" data-pv="38700" data-av="382300">$32,400</td></tr>
+<td></tr>
+                <tr><th scope="row">December</th><td data-v="41500" data-pv="32400" data-av="414700">$41,500</td></tr>
+<td></tr>
+</td></tr>
+            </tbody></table>
+    </data>
+    <script>
+        if (!isAdvancedAttr()) {
+            const dataCharts = document.querySelectorAll('data-chart');
+            dataCharts.forEach(dataChart => {
+                const tbody = dataChart.querySelector('tbody');
+                if (!tbody) return;
+
+                const min = parseFloat(dataChart.getAttribute('min')) || 0;
+                const max = parseFloat(dataChart.getAttribute('max')) || 100;
+                const numCols = tbody.querySelectorAll('tr').length;
+                tbody.style.gridTemplateColumns = `repeat(${numCols}, 1fr)`;
+                tbody.style.setProperty('--_min', min);
+                tbody.style.setProperty('--_max', max);
+                tbody.style.setProperty('--_t', parseFloat(tbody.getAttribute('data-t')) || 0);
+
+                const valueCells = tbody.querySelectorAll('td[data-v]');
+                valueCells.forEach(td => {
+                    const v = parseFloat(td.getAttribute('data-v')) || 0;
+                    const pv = parseFloat(td.getAttribute('data-pv')) || v;
+                    const av = parseFloat(td.getAttribute('data-av')) || 0;
+
+                    td.style.setProperty('--_v', v);
+                    td.style.setProperty('--_pv', pv);
+                    td.style.setProperty('--_av', av);
+                });
+            });
+        }
+
+        function isAdvancedAttrSupported() {
+            const T = document.createElement('div');
+            document.body.appendChild(T);
+            try {
+                T.style.setProperty('--t', 'attr(data-test type(<number>), 0)');
+                T.dataset.test = "123";
+                const computedValue = getComputedStyle(T).getPropertyValue('--t').trim();
+                return computedValue === "123";
+            } catch (e) {
+                return false;
+            } finally {
+                T.remove();
+            }
+        }
+    </script>
+</body>
+</html>
